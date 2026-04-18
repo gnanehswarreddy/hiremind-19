@@ -1,0 +1,103 @@
+{% extends "candidate/base.html" %}
+{% block title %}Upload Resume | HireMind{% endblock %}
+{% block page_title %}Upload Your Resume{% endblock %}
+{% block page_subtitle %}Add a PDF or DOCX resume to generate scoring, insights, and better matches.{% endblock %}
+{% block content %}
+<section class="upload-shell">
+    <article class="upload-hero">
+        <div>
+            <span class="upload-kicker">Resume Intake</span>
+            <h2>Drop in your latest resume and let HireMind do the heavy lifting.</h2>
+            <p>We analyze structure, extract skills, score your profile, and connect you with stronger-fit opportunities in one flow.</p>
+        </div>
+        <div class="upload-hero-stats">
+            <div class="upload-stat">
+                <strong>PDF / DOCX</strong>
+                <span>Supported formats</span>
+            </div>
+            <div class="upload-stat">
+                <strong>5 MB</strong>
+                <span>Current upload limit</span>
+            </div>
+        </div>
+    </article>
+
+    <form method="post" enctype="multipart/form-data" class="upload-box">
+        {{ form.hidden_tag() }}
+
+        <label class="drop-area" id="dropArea" for="fileInput">
+            <div class="drop-area-icon">↑</div>
+            <h3>Choose a file or drag and drop it here</h3>
+            <p>Upload a fresh resume to unlock scoring, AI insights, and better job matching.</p>
+            <small>PDF or DOCX up to 5MB</small>
+
+            {{ form.resume(id="fileInput", class_="visually-hidden-input", accept=".pdf,.docx") }}
+            <span class="choose-btn">Choose File</span>
+            <span id="fileName" class="file-name">No file chosen</span>
+        </label>
+
+        {% if form.resume.errors %}
+            <div class="upload-errors">
+                {% for error in form.resume.errors %}
+                    <div class="flash flash-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <p class="formats">Accepted formats: <b>PDF, DOCX</b></p>
+        {{ form.submit(class_="upload-btn") }}
+    </form>
+
+    <section class="upload-features">
+        <article class="upload-feature-card">
+            <h3>Secure &amp; Private</h3>
+            <p>Your uploaded file stays inside your HireMind workspace and is processed for matching and scoring only.</p>
+        </article>
+        <article class="upload-feature-card">
+            <h3>AI Insights</h3>
+            <p>We break down the resume into profile signals, strengths, and improvement areas automatically.</p>
+        </article>
+        <article class="upload-feature-card">
+            <h3>Better Matches</h3>
+            <p>Fresh resume data improves your fit scoring across jobs, recommendations, and recruiter visibility.</p>
+        </article>
+    </section>
+</section>
+
+<script>
+(() => {
+    const fileInput = document.getElementById("fileInput");
+    const fileName = document.getElementById("fileName");
+    const dropArea = document.getElementById("dropArea");
+
+    if (!fileInput || !fileName || !dropArea) return;
+
+    const updateName = (file) => {
+        fileName.textContent = file ? file.name : "No file chosen";
+    };
+
+    fileInput.addEventListener("change", () => updateName(fileInput.files[0]));
+
+    ["dragenter", "dragover"].forEach((eventName) => {
+        dropArea.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropArea.classList.add("is-dragover");
+        });
+    });
+
+    ["dragleave", "drop"].forEach((eventName) => {
+        dropArea.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropArea.classList.remove("is-dragover");
+        });
+    });
+
+    dropArea.addEventListener("drop", (event) => {
+        const files = event.dataTransfer.files;
+        if (!files.length) return;
+        fileInput.files = files;
+        updateName(files[0]);
+    });
+})();
+</script>
+{% endblock %}

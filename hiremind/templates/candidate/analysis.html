@@ -1,0 +1,65 @@
+{% extends "candidate/base.html" %}
+{% block title %}Resume Analysis | HireMind{% endblock %}
+{% block page_title %}R3 Analysis{% endblock %}
+{% block page_subtitle %}Inspect the scoring signals and improvement recommendations for your latest resume.{% endblock %}
+{% block content %}
+<section class="analysis-toolbar">
+    <a href="{{ url_for('candidate.resumes') }}" class="resume-library-link">Back to resumes</a>
+    <form method="post" action="{{ url_for('candidate.delete_resume', id=resume._id|string) }}" onsubmit="return confirm('Delete this resume permanently?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="resume-delete-button">Delete resume</button>
+    </form>
+</section>
+<section class="dashboard-grid">
+    <article class="metric-card"><span>Relevance</span><strong>{{ resume.scores.relevance_score }}</strong></article>
+    <article class="metric-card"><span>Representation</span><strong>{{ resume.scores.representation_score }}</strong></article>
+    <article class="metric-card"><span>Readability</span><strong>{{ resume.scores.readability_score }}</strong></article>
+    <article class="metric-card highlight"><span>Final Score</span><strong>{{ resume.scores.final_score }}</strong></article>
+</section>
+<section class="panel-grid">
+    <article class="panel-card">
+        <h3>Parsed Skills</h3>
+        <div class="tag-row">{% for skill in resume.parsed_data.skills %}<span class="tag">{{ skill }}</span>{% else %}<span class="tag">No skills found</span>{% endfor %}</div>
+    </article>
+    <article class="panel-card">
+        <h3>Profile Summary</h3>
+        <p>{{ resume.parsed_data.summary }}</p>
+        <p><strong>Experience:</strong> {{ resume.parsed_data.experience }}</p>
+        <p><strong>Traits:</strong> {{ resume.parsed_data.cognitive_traits|join(', ') }}</p>
+        <p><strong>Soft Skills:</strong> {{ algorithm_outputs.CIS.soft_skills|join(', ') if algorithm_outputs.CIS else 'Not inferred' }}</p>
+    </article>
+    <article class="panel-card">
+        <h3>Structure Signals</h3>
+        <p><strong>Education:</strong> {{ resume.parsed_data.education|join(', ') if resume.parsed_data.education else 'Not detected' }}</p>
+        <p><strong>Profile Completeness:</strong> {{ resume.parsed_data.profile_completeness or 0 }}%</p>
+        <div class="tag-row">
+            {% for key, value in (resume.parsed_data.sections or {}).items() %}
+                <span class="tag">{{ key.replace('has_', '') }}: {{ 'yes' if value else 'no' }}</span>
+            {% endfor %}
+        </div>
+    </article>
+    <article class="panel-card">
+        <h3>Resume Improvement Engine</h3>
+        {% for tip in algorithm_outputs.RIE %}
+            <p>{{ tip }}</p>
+        {% else %}
+            <p>No improvements suggested.</p>
+        {% endfor %}
+    </article>
+    <article class="panel-card">
+        <h3>Behavioral Pattern Model</h3>
+        <p><strong>Behavior Score:</strong> {{ algorithm_outputs.BPM.behavior_score if algorithm_outputs.BPM else 0 }}%</p>
+        <div class="tag-row">
+            {% for key, value in (algorithm_outputs.BPM.behavior_indicators or {}).items() %}
+                <span class="tag">{{ key }}: {{ 'yes' if value else 'no' }}</span>
+            {% endfor %}
+        </div>
+    </article>
+    <article class="panel-card">
+        <h3>Feature Engineering Model</h3>
+        <p><strong>Skill Count:</strong> {{ algorithm_outputs.FEM.skill_count if algorithm_outputs.FEM else 0 }}</p>
+        <p><strong>Trait Count:</strong> {{ algorithm_outputs.FEM.trait_count if algorithm_outputs.FEM else 0 }}</p>
+        <p><strong>Section Count:</strong> {{ algorithm_outputs.FEM.section_count if algorithm_outputs.FEM else 0 }}</p>
+    </article>
+</section>
+{% endblock %}

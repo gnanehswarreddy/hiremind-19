@@ -1,0 +1,163 @@
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+127.0.0.1 - - [18/Apr/2026 14:39:18] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:39:33] "POST /candidate/resume-builder/download HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:39:39] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:40:43] "GET /candidate/analysis/69e34a0a16c2499657c07222 HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:40:43] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:40:43] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:40:43] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:40:46] "GET /candidate/applications HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:40:46] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:40:46] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:40:46] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:40:47] "GET /candidate/resumes HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:40:47] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:40:47] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:40:47] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:40:51] "GET /candidate/analysis/69e34a0a16c2499657c07222 HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:40:51] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:40:51] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:40:51] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:09] "GET /candidate/analysis/69e34a0a16c2499657c07222 HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:41:09] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:09] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:09] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:16] "GET /candidate/recommendations HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:41:16] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:16] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:16] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:23] "GET /candidate/job/69e3296ac75c904d6d1145eb HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:41:23] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:23] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:23] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:25] "POST /candidate/job/69e3296ac75c904d6d1145eb HTTP/1.1" 302 -
+127.0.0.1 - - [18/Apr/2026 14:41:25] "GET /candidate/applications HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:41:25] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:25] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:25] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:28] "GET /candidate/job/69e3296ac75c904d6d1145eb HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:41:28] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:28] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:28] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:30] "GET /candidate/messages HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:41:30] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:30] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:30] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:34] "POST /candidate/messages/send HTTP/1.1" 302 -
+127.0.0.1 - - [18/Apr/2026 14:41:34] "GET /candidate/messages?chat=69e3296ac75c904d6d1145ea::69e347996b2593c4309bfb9d HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:41:34] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:34] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:34] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:39] "GET /candidate/settings HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:41:40] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:40] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:41:40] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:44:10] "POST /logout HTTP/1.1" 302 -
+127.0.0.1 - - [18/Apr/2026 14:44:10] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:44:10] "GET /static/css/style.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:44:10] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:44:12] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:44:12] "GET /static/css/style.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:44:12] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:44:17] "GET /signup HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:44:17] "GET /static/css/auth.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:44:17] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:44:57] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:44:57] "GET /static/css/auth.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:44:57] "GET /static/js/app.js HTTP/1.1" 304 -
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|##########| 103/103 [00:00<00:00, 3685.52it/s]
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/all-MiniLM-L6-v2
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|##########| 103/103 [00:00<00:00, 2712.97it/s]
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/all-MiniLM-L6-v2
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|##########| 103/103 [00:00<00:00, 11587.72it/s]
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/all-MiniLM-L6-v2
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+127.0.0.1 - - [18/Apr/2026 14:45:08] "POST /signup HTTP/1.1" 302 -
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|##########| 103/103 [00:00<00:00, 2761.23it/s]
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/all-MiniLM-L6-v2
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+127.0.0.1 - - [18/Apr/2026 14:45:08] "POST /signup HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:09] "POST /login HTTP/1.1" 302 -
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|##########| 103/103 [00:00<00:00, 2487.51it/s]
+127.0.0.1 - - [18/Apr/2026 14:45:09] "GET /recruiter/dashboard HTTP/1.1" 200 -
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/all-MiniLM-L6-v2
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+127.0.0.1 - - [18/Apr/2026 14:45:09] "GET /static/css/style.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:09] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:09] "POST /signup HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:10] "POST /signup HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:11] "POST /signup HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:20] "GET /recruiter/create-job HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:20] "GET /static/css/style.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:20] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:26] "GET /recruiter/jobs HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:26] "GET /static/css/style.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:26] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:38] "GET /recruiter/applications HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:38] "GET /static/css/style.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:38] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:40] "GET /recruiter/messages HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:40] "GET /static/css/style.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:40] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:42] "GET /recruiter/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:42] "GET /static/css/style.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:42] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:44] "GET /recruiter/settings HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:44] "GET /static/css/style.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:44] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:49] "POST /delete-account HTTP/1.1" 302 -
+127.0.0.1 - - [18/Apr/2026 14:45:49] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:49] "GET /static/css/style.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:49] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:51] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:51] "GET /static/css/auth.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:51] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:53] "GET /auth/google/start?origin=login HTTP/1.1" 302 -
+127.0.0.1 - - [18/Apr/2026 14:45:59] "GET /auth/google/callback?state=TM-zAmsMgJg_HqmAzD1KkVjiHjqmU7Bd&iss=https://accounts.google.com&code=4/0Aci98E-U0BrTuLFurGExJioOmel0kElgAK_qYMI1ucvul9vtUiy2Ty4dyQJhlT85DlgcSA&scope=email+profile+https://www.googleapis.com/auth/userinfo.profile+openid+https://www.googleapis.com/auth/userinfo.email&authuser=0&prompt=none HTTP/1.1" 302 -
+127.0.0.1 - - [18/Apr/2026 14:45:59] "GET /candidate/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:45:59] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:59] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:45:59] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:46:09] "GET /candidate/upload HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:46:09] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:46:09] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:46:09] "GET /static/js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:46:13] "GET /candidate/upload HTTP/1.1" 200 -
+127.0.0.1 - - [18/Apr/2026 14:46:13] "GET /static/css/dashboard.css HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:46:14] "GET /static/js/theme.js HTTP/1.1" 304 -
+127.0.0.1 - - [18/Apr/2026 14:46:14] "GET /static/js/app.js HTTP/1.1" 304 -
+forrtl: error (200): program aborting due to window-CLOSE event
+Image              PC                Routine            Line        Source             
+KERNELBASE.dll     00007FFBE676A3CD  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFBE937E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFBE9B6C3FC  Unknown               Unknown  Unknown

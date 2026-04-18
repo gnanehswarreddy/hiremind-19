@@ -1,0 +1,63 @@
+{% extends "candidate/base.html" %}
+{% block title %}Applications | HireMind{% endblock %}
+{% block page_title %}Your Applications{% endblock %}
+{% block page_subtitle %}Follow every application stage from submission to final decision.{% endblock %}
+{% block content %}
+<section class="applications-shell">
+    <section class="applications-board">
+        <div class="applications-table-header">
+            <span>Job</span>
+            <span>Status</span>
+            <span>Company</span>
+            <span>Applied On</span>
+            <span>Updated On</span>
+            <span></span>
+        </div>
+
+        {% for row in rows %}
+            {% set status_slug = row.application.status|lower|replace(' ', '') %}
+            {% set initials = (row.company[:1] if row.company else row.job.title[:1])|upper %}
+            <article class="application-row">
+                <div class="application-job">
+                    <div class="application-logo">{{ initials }}</div>
+                    <div class="application-copy">
+                        <strong>{{ row.job.title }}</strong>
+                        <span>{{ row.job.experience_level or "Full-time" }} • {{ row.location }}</span>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="application-status {{ status_slug }}">
+                        <span class="application-status-dot"></span>
+                        {{ row.application.status|title }}
+                    </span>
+                </div>
+
+                <div class="application-company">{{ row.company }}</div>
+
+                <div class="application-date">
+                    <span class="application-date-icon">□</span>
+                    {{ row.application.created_at.strftime('%b %d, %Y') }}
+                </div>
+
+                <div class="application-date">
+                    <span class="application-date-icon">◔</span>
+                    {{ row.updated_at.strftime('%b %d, %Y') }}
+                </div>
+
+                <div class="application-actions">
+                    <a class="application-btn" href="{{ url_for('candidate.job_detail', id=row.job._id|string) }}">View Details</a>
+                    <button class="application-menu" type="button" aria-label="More actions">⋮</button>
+                </div>
+            </article>
+        {% else %}
+            <section class="applications-empty">
+                <div class="applications-empty-art">▣</div>
+                <h2>No applications submitted yet.</h2>
+                <p>Start applying to jobs and track your progress here.</p>
+                <a class="applications-empty-btn" href="{{ url_for('candidate.jobs') }}">Explore Jobs</a>
+            </section>
+        {% endfor %}
+    </section>
+</section>
+{% endblock %}

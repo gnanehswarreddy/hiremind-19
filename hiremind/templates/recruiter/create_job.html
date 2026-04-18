@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}Create Job | HireMind{% endblock %}
+{% block page_title %}Create a Job{% endblock %}
+{% block content %}
+<section class="recruiter-create-shell">
+    <div class="recruiter-create-copy">
+        <p>Fill in the details to publish a job and find the right talent.</p>
+    </div>
+
+    <div class="recruiter-create-layout">
+        <form method="post" class="recruiter-create-form" id="jobCreateForm">
+            {{ form.hidden_tag() }}
+
+            <div class="recruiter-create-grid two">
+                <div class="form-group">
+                    {{ form.title.label }}
+                    {{ form.title(class_="input", placeholder="AI/ML Engineer", data_preview="title") }}
+                </div>
+                <div class="form-group">
+                    {{ form.experience_level.label }}
+                    {{ form.experience_level(class_="input", data_preview="experience_level") }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ form.job_type.label }}
+                <div class="recruiter-choice-row" data-preview-group="job_type">
+                    {% for subfield in form.job_type %}
+                        <label class="recruiter-choice-pill">
+                            {{ subfield }}
+                            <span>{{ subfield.label.text }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="recruiter-create-grid two">
+                <div class="form-group">
+                    {{ form.location.label }}
+                    {{ form.location(class_="input", placeholder="Bangalore, India", data_preview="location") }}
+                </div>
+                <div class="form-group">
+                    {{ form.work_mode.label }}
+                    {{ form.work_mode(class_="input", data_preview="work_mode") }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ form.description.label }}
+                {{ form.description(class_="input textarea", placeholder="We are looking for an AI/ML Engineer to build intelligent solutions using machine learning models...", data_preview="description") }}
+            </div>
+
+            <div class="recruiter-create-grid two">
+                <div class="form-group">
+                    {{ form.skills.label }}
+                    {{ form.skills(class_="input", placeholder="Python, Machine Learning, Deep Learning, SQL, TensorFlow", data_preview="skills") }}
+                </div>
+                <div class="form-group">
+                    {{ form.cognitive_traits.label }}
+                    {{ form.cognitive_traits(class_="input", placeholder="Problem Solving, Analytical Thinking, Adaptability", data_preview="traits") }}
+                </div>
+            </div>
+
+            <div class="recruiter-create-grid salary">
+                <div class="form-group">
+                    <label>Currency</label>
+                    <div class="input recruiter-static-input">INR</div>
+                </div>
+                <div class="form-group">
+                    {{ form.salary_min.label }}
+                    {{ form.salary_min(class_="input", placeholder="1200000", data_preview="salary_min") }}
+                </div>
+                <div class="form-group">
+                    {{ form.salary_max.label }}
+                    {{ form.salary_max(class_="input", placeholder="2000000", data_preview="salary_max") }}
+                </div>
+            </div>
+
+            <div class="recruiter-create-grid two">
+                <div class="form-group">
+                    {{ form.deadline.label }}
+                    {{ form.deadline(class_="input", data_preview="deadline") }}
+                </div>
+            </div>
+
+            <div class="button-row">
+                {{ form.submit(class_="primary-button") }}
+                <button type="button" class="ghost-button">Save as Draft</button>
+            </div>
+        </form>
+
+        <aside class="recruiter-create-preview">
+            <h3>Job Summary</h3>
+
+            <div class="recruiter-summary-card">
+                <div class="recruiter-summary-icon">J</div>
+                <div>
+                    <strong id="previewTitle">{{ form.title.data or "AI/ML Engineer" }}</strong>
+                    <div class="recruiter-summary-meta">
+                        <span id="previewLocation">{{ form.location.data or "Bangalore, India" }}</span>
+                        <span id="previewMode">{{ form.work_mode.data or "Hybrid" }}</span>
+                        <span id="previewType">{{ form.job_type.data or "Full-time" }}</span>
+                        <span id="previewExperience">{{ form.experience_level.data or "2-4 years" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recruiter-summary-section">
+                <h4>Top Skills</h4>
+                <div class="tag-row" id="previewSkills">
+                    {% for skill in (form.skills.data or "Python, Machine Learning, Deep Learning, SQL, TensorFlow").split(",") if skill.strip() %}
+                        <span class="tag">{{ skill.strip() }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="recruiter-summary-section">
+                <h4>Cognitive Traits</h4>
+                <div class="tag-row" id="previewTraits">
+                    {% for trait in (form.cognitive_traits.data or "Problem Solving, Analytical Thinking, Adaptability").split(",") if trait.strip() %}
+                        <span class="tag">{{ trait.strip() }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="recruiter-ai-box">
+                <strong>AI Match Preview</strong>
+                <p>This role is expected to get strong matches based on the selected skills and traits.</p>
+            </div>
+        </aside>
+    </div>
+</section>
+
+<script>
+(() => {
+    const form = document.getElementById("jobCreateForm");
+    if (!form) return;
+
+    const parseTags = (value, fallback) => {
+        const items = value.split(",").map((item) => item.trim()).filter(Boolean);
+        return items.length ? items : fallback;
+    };
+
+    const syncText = (selector, targetId, fallback) => {
+        const field = form.querySelector(selector);
+        const target = document.getElementById(targetId);
+        if (!field || !target) return;
+        target.textContent = field.value.trim() || fallback;
+    };
+
+    const syncTags = (selector, targetId, fallback) => {
+        const field = form.querySelector(selector);
+        const target = document.getElementById(targetId);
+        if (!field || !target) return;
+        const values = parseTags(field.value, fallback);
+        target.innerHTML = "";
+        values.forEach((value) => {
+            const tag = document.createElement("span");
+            tag.className = "tag";
+            tag.textContent = value;
+            target.appendChild(tag);
+        });
+    };
+
+    const syncRadio = () => {
+        const checked = form.querySelector('input[name="job_type"]:checked');
+        const target = document.getElementById("previewType");
+        if (target) target.textContent = checked ? checked.value : "Full-time";
+    };
+
+    const syncAll = () => {
+        syncText('[data-preview="title"]', "previewTitle", "AI/ML Engineer");
+        syncText('[data-preview="location"]', "previewLocation", "Bangalore, India");
+        syncText('[data-preview="experience_level"]', "previewExperience", "2-4 years");
+        syncText('[data-preview="work_mode"]', "previewMode", "Hybrid");
+        syncTags('[data-preview="skills"]', "previewSkills", ["Python", "Machine Learning", "Deep Learning"]);
+        syncTags('[data-preview="traits"]', "previewTraits", ["Problem Solving", "Analytical Thinking", "Adaptability"]);
+        syncRadio();
+    };
+
+    form.addEventListener("input", syncAll);
+    form.addEventListener("change", syncAll);
+    syncAll();
+})();
+</script>
+{% endblock %}

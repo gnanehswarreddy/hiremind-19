@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}HireMind{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <div class="app-shell">
+        {% if current_user.is_authenticated and active_role %}
+            <aside class="sidebar">
+                <a href="{{ url_for('landing') }}" class="brand">HireMind</a>
+                <p class="sidebar-role">{{ active_role|title }} Workspace</p>
+                <nav class="nav-list">
+                    {% if active_role == 'candidate' %}
+                        <a class="{% if request.endpoint == 'candidate.dashboard' %}active{% endif %}" href="{{ url_for('candidate.dashboard') }}">Dashboard</a>
+                        <a class="{% if request.endpoint == 'candidate.upload' %}active{% endif %}" href="{{ url_for('candidate.upload') }}">Upload Resume</a>
+                        <a class="{% if request.endpoint == 'candidate.resume_builder' %}active{% endif %}" href="{{ url_for('candidate.resume_builder') }}">Resume Builder</a>
+                        <a class="{% if request.endpoint == 'candidate.recommendations' %}active{% endif %}" href="{{ url_for('candidate.recommendations') }}">Recommendations</a>
+                        <a class="{% if request.endpoint == 'candidate.jobs' or request.endpoint == 'candidate.job_detail' %}active{% endif %}" href="{{ url_for('candidate.jobs') }}">Jobs</a>
+                        <a class="{% if request.endpoint == 'candidate.applications' %}active{% endif %}" href="{{ url_for('candidate.applications') }}">Applications</a>
+                        <a class="{% if request.endpoint == 'candidate.resumes' %}active{% endif %}" href="{{ url_for('candidate.resumes') }}">Resumes</a>
+                        <a class="{% if request.endpoint == 'candidate.settings' %}active{% endif %}" href="{{ url_for('candidate.settings') }}">Settings</a>
+                    {% elif active_role == 'recruiter' %}
+                        <a class="{% if request.endpoint == 'recruiter.dashboard' %}active{% endif %}" href="{{ url_for('recruiter.dashboard') }}">Dashboard</a>
+                        <a class="{% if request.endpoint == 'recruiter.create_job' %}active{% endif %}" href="{{ url_for('recruiter.create_job') }}">Create Job</a>
+                        <a class="{% if request.endpoint == 'recruiter.jobs' or request.endpoint == 'recruiter.matches' %}active{% endif %}" href="{{ url_for('recruiter.jobs') }}">Jobs</a>
+                        <a class="{% if request.endpoint == 'recruiter.applications' %}active{% endif %}" href="{{ url_for('recruiter.applications') }}">Applications</a>
+                        <a class="{% if request.endpoint == 'recruiter.messages' %}active{% endif %}" href="{{ url_for('recruiter.messages') }}">Messages</a>
+                        <a class="{% if request.endpoint == 'recruiter.analytics' %}active{% endif %}" href="{{ url_for('recruiter.analytics') }}">Analytics</a>
+                        <a class="{% if request.endpoint == 'recruiter.settings' %}active{% endif %}" href="{{ url_for('recruiter.settings') }}">Settings</a>
+                    {% endif %}
+                </nav>
+                <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">
+                    <span class="theme-toggle-icon" data-theme-icon>🌙</span>
+                </button>
+                <form method="post" action="{{ url_for('auth.logout') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="ghost-button full-width" type="submit">Logout</button>
+                </form>
+            </aside>
+        {% endif %}
+
+        <main class="main-content {% if not current_user.is_authenticated %}public-main{% endif %}">
+            {% block shell_header %}
+                <header class="topbar">
+                    <div>
+                        <p class="eyebrow">{% block eyebrow %}AI-powered hiring intelligence{% endblock %}</p>
+                        <h1>{% block page_title %}Hire smarter{% endblock %}</h1>
+                    </div>
+                    <div class="topbar-actions">
+                        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">
+                            <span class="theme-toggle-icon" data-theme-icon>🌙</span>
+                        </button>
+                        {% if current_user.is_authenticated %}
+                            <span class="pill">{{ current_user.name }}</span>
+                        {% else %}
+                            <a class="ghost-button" href="{{ url_for('auth.login') }}">Login</a>
+                            <a class="primary-button" href="{{ url_for('auth.signup') }}">Get Started</a>
+                        {% endif %}
+                    </div>
+                </header>
+            {% endblock %}
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <section class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </section>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Candidate Profile | HireMind{% endblock %}
+{% block page_title %}{{ candidate.name }}{% endblock %}
+{% block content %}
+<section class="panel-grid">
+    <article class="panel-card">
+        <p><strong>Email:</strong> {{ candidate.email }}</p>
+        <p><strong>Role:</strong> {{ candidate.role|title }}</p>
+        <div class="button-row">
+            <a class="primary-button" href="{{ url_for('recruiter.messages', chat=candidate_chat_id) }}">Chat With Candidate</a>
+        </div>
+        {% if latest_resume %}
+            <p><strong>Latest R3 Score:</strong> {{ latest_resume.scores.final_score }}</p>
+            <div class="tag-row">{% for skill in latest_resume.parsed_data.skills %}<span class="tag">{{ skill }}</span>{% endfor %}</div>
+            <p><strong>Soft Skills:</strong> {{ latest_resume.parsed_data.soft_skills|join(', ') if latest_resume.parsed_data.soft_skills else 'Not inferred' }}</p>
+            <p><strong>Education:</strong> {{ latest_resume.parsed_data.education|join(', ') if latest_resume.parsed_data.education else 'Not detected' }}</p>
+        {% else %}
+            <p>No resume available.</p>
+        {% endif %}
+    </article>
+    <article class="panel-card">
+        <h3>Resume History</h3>
+        {% for resume in resumes %}
+            <div class="list-row">
+                <div><strong>{{ resume.filename }}</strong><p>{{ resume.created_at.strftime('%d %b %Y') }}</p></div>
+                <span>{{ resume.scores.final_score }}</span>
+            </div>
+        {% else %}
+            <p>No resumes submitted.</p>
+        {% endfor %}
+    </article>
+</section>
+{% endblock %}

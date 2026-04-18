@@ -1,0 +1,109 @@
+{% extends "candidate/base.html" %}
+{% block title %}Messages | HireMind{% endblock %}
+{% block page_title %}Messages{% endblock %}
+{% block page_subtitle %}Track real application and resume updates from your HireMind data.{% endblock %}
+{% block content %}
+<section class="messages-shell">
+    <aside class="messages-list-panel">
+        <div class="messages-list-head">
+            <h2>Messages</h2>
+            <span class="messages-compose">{{ chats|length }}</span>
+        </div>
+
+        <form class="messages-search" method="get" action="{{ url_for('candidate.messages') }}">
+            <input type="hidden" name="tab" value="{{ selected_tab }}">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Search messages..." aria-label="Search messages">
+        </form>
+
+        <div class="messages-tabs">
+            <a class="messages-tab {% if selected_tab == 'all' %}active{% endif %}" href="{{ url_for('candidate.messages', tab='all', q=search_query) }}">All</a>
+            <a class="messages-tab {% if selected_tab == 'recruiters' %}active{% endif %}" href="{{ url_for('candidate.messages', tab='recruiters', q=search_query) }}">Recruiters</a>
+            <a class="messages-tab {% if selected_tab == 'system' %}active{% endif %}" href="{{ url_for('candidate.messages', tab='system', q=search_query) }}">System</a>
+        </div>
+
+        <div class="messages-chat-list {% if not chats %}messages-empty-list{% endif %}">
+            {% for chat in chats %}
+                <a class="messages-chat-item {% if active_chat and chat.id == active_chat.id %}active{% endif %}" href="{{ url_for('candidate.messages', chat=chat.id, tab=selected_tab, q=search_query) }}">
+                    <div class="messages-chat-avatar">{{ chat.initials }}</div>
+                    <div class="messages-chat-copy">
+                        <div class="messages-chat-row">
+                            <strong>{{ chat.name }}</strong>
+                            <span>{{ chat.time.strftime('%b %d') if chat.time else '' }}</span>
+                        </div>
+                        <div class="messages-chat-row">
+                            <p>{{ chat.message }}</p>
+                            {% if chat.badge %}
+                                <span class="messages-chat-badge">{{ chat.badge }}</span>
+                            {% endif %}
+                        </div>
+                        <small class="messages-chat-meta">{{ chat.job_title }}</small>
+                    </div>
+                </a>
+            {% else %}
+                <div class="messages-empty-card">
+                    <div class="messages-empty-icon">M</div>
+                    <h3>No messages yet</h3>
+                    <p>Once applications, recruiter updates, or resume events exist, they will show up here.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if chats %}
+            <div class="messages-load-more">Showing live conversation history</div>
+        {% endif %}
+    </aside>
+
+    <section class="messages-thread-panel">
+        <header class="messages-thread-head">
+            <div class="messages-thread-profile">
+                <div class="messages-thread-avatar {% if not active_chat %}muted{% endif %}">{{ active_chat.initials if active_chat else 'M' }}</div>
+                <div>
+                    <h3>{{ active_chat.name if active_chat else 'No active conversation' }}</h3>
+                    <p>{{ active_chat.status if active_chat else 'Waiting for real messages' }}</p>
+                </div>
+            </div>
+
+            <div class="messages-thread-actions">
+                <span class="messages-thread-pill">{{ active_chat.job_title if active_chat else 'Inbox' }}</span>
+            </div>
+        </header>
+
+        <div class="messages-thread-body {% if not thread %}messages-thread-empty{% endif %}">
+            {% if thread %}
+                <div class="messages-day-pill">Latest activity</div>
+                {% for msg in thread %}
+                    <article class="message-row {{ msg.sender }}">
+                        {% if msg.sender == "them" %}
+                            <div class="message-avatar">{{ active_chat.initials }}</div>
+                        {% endif %}
+                        <div class="message-bubble-wrap">
+                            <div class="message-bubble {{ msg.sender }}">
+                                <p>{{ msg.text }}</p>
+                            </div>
+                            <span class="message-time {{ msg.sender }}">{{ msg.time.strftime('%b %d, %I:%M %p') if msg.time else '' }}</span>
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <div class="messages-empty-card large">
+                    <div class="messages-empty-icon">M</div>
+                    <h3>No real conversation selected</h3>
+                    <p>This view only shows real application or resume events from your database. There are no stored message records yet.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if active_chat and active_chat.reply_enabled %}
+            <form class="messages-input-bar" method="post" action="{{ url_for('candidate.send_message') }}">
+                {{ reply_form.hidden_tag() }}
+                {{ reply_form.message(placeholder="Write a message to the recruiter...", aria_label="Type a message") }}
+                <button class="messages-send" type="submit" aria-label="Send message">></button>
+            </form>
+        {% else %}
+            <div class="messages-input-bar messages-input-bar-muted">
+                <div class="messages-system-note">This thread is system generated and read only.</div>
+            </div>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}

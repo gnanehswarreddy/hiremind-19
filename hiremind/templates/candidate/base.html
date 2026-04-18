@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Candidate Workspace | HireMind{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+<div class="candidate-shell">
+    <aside class="candidate-sidebar">
+        <div class="sidebar-top">
+            <div class="brand-row">
+                <div class="brand-mark">HM</div>
+                <div>
+                    <h2>HireMind</h2>
+                    <p>Candidate Workspace</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a class="nav-item {% if request.endpoint == 'candidate.dashboard' %}active{% endif %}" href="{{ url_for('candidate.dashboard') }}">Dashboard</a>
+                <a class="nav-item {% if request.endpoint == 'candidate.jobs' or request.endpoint == 'candidate.job_detail' %}active{% endif %}" href="{{ url_for('candidate.jobs') }}">Job Matches</a>
+                <a class="nav-item {% if request.endpoint == 'candidate.applications' %}active{% endif %}" href="{{ url_for('candidate.applications') }}">Applications</a>
+                <a class="nav-item {% if request.endpoint == 'candidate.resumes' or request.endpoint == 'candidate.upload' or request.endpoint == 'candidate.resume_builder' %}active{% endif %}" href="{{ url_for('candidate.resumes') }}">Resumes</a>
+                <a class="nav-item {% if request.endpoint == 'candidate.upload' %}active{% endif %}" href="{{ url_for('candidate.upload') }}">Upload Resume</a>
+                <a class="nav-item {% if request.endpoint == 'candidate.resume_builder' %}active{% endif %}" href="{{ url_for('candidate.resume_builder') }}">Resume Builder</a>
+                <a class="nav-item {% if request.endpoint == 'candidate.analysis' %}active{% endif %}" href="{{ url_for('candidate.analysis', id=candidate_shell_resume._id|string) if candidate_shell_resume else url_for('candidate.upload') }}">Check Score</a>
+                <a class="nav-item {% if request.endpoint == 'candidate.recommendations' %}active{% endif %}" href="{{ url_for('candidate.recommendations') }}">Skills &amp; Gap</a>
+                <a class="nav-item {% if request.endpoint == 'candidate.analysis' %}active{% endif %}" href="{{ url_for('candidate.analysis', id=candidate_shell_resume._id|string) if candidate_shell_resume else url_for('candidate.upload') }}">AI Insights</a>
+                <a class="nav-item {% if request.endpoint == 'candidate.messages' %}active{% endif %}" href="{{ url_for('candidate.messages') }}">Messages</a>
+                <span class="nav-item nav-item-muted">Saved Jobs</span>
+                <a class="nav-item {% if request.endpoint == 'candidate.settings' %}active{% endif %}" href="{{ url_for('candidate.settings') }}">Settings</a>
+            </nav>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="profile-chip">
+                {% if candidate_shell_image_path %}
+                    <img src="{{ url_for('static', filename=candidate_shell_image_path) }}" alt="{{ current_user.name }} profile photo">
+                {% else %}
+                    {{ candidate_shell_initials }}
+                {% endif %}
+            </div>
+            <div class="profile-copy">
+                <strong>{{ current_user.name }}</strong>
+                <span>{{ current_user.email }}</span>
+                <a href="{{ url_for('candidate.settings') }}">View Profile</a>
+            </div>
+            <form method="post" action="{{ url_for('auth.logout') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="logout-button" type="submit">Logout</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="candidate-main">
+        <header class="dashboard-header">
+            <div>
+                <h1>{% block page_title %}Candidate Workspace{% endblock %}</h1>
+                <p>{% block page_subtitle %}Track your progress, improve your profile and land your dream job.{% endblock %}</p>
+            </div>
+
+            <div class="header-actions">
+                <form class="search-shell" method="get" action="{{ url_for('candidate.jobs') }}">
+                    <input
+                        id="candidateGlobalSearch"
+                        type="text"
+                        name="q"
+                        value="{{ search_query if search_query is defined else request.args.get('q', '') }}"
+                        placeholder="Search jobs, companies, skills..."
+                        aria-label="Search jobs"
+                        autocomplete="off"
+                    >
+                    <span class="search-shortcut">K</span>
+                </form>
+
+                <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle color theme">
+                    <span class="theme-toggle-track">
+                        <span class="theme-toggle-thumb"></span>
+                    </span>
+                </button>
+
+                <div class="header-badge">3</div>
+                <div class="header-profile">
+                    <span class="header-profile-chip">
+                        {% if candidate_shell_image_path %}
+                            <img src="{{ url_for('static', filename=candidate_shell_image_path) }}" alt="{{ current_user.name }} profile photo">
+                        {% else %}
+                            {{ candidate_shell_initials }}
+                        {% endif %}
+                    </span>
+                    <div class="header-profile-copy">
+                        <strong>{{ current_user.name }}</strong>
+                        <span>Candidate</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

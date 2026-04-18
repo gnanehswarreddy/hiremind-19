@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}Recruiter Dashboard | HireMind{% endblock %}
+{% block page_title %}Recruiter Dashboard{% endblock %}
+{% block content %}
+<section class="recruiter-shell">
+    <div class="recruiter-hero">
+        <div>
+            <p>Welcome back, {{ recruiter_name }}. Here's what's happening with your hiring pipeline.</p>
+        </div>
+        <div class="recruiter-date-pill">{{ date_range }}</div>
+    </div>
+
+    <section class="recruiter-stat-grid">
+        <article class="recruiter-stat-card">
+            <span class="recruiter-stat-label">Published Jobs</span>
+            <strong>{{ stats.jobs }}</strong>
+            <p>Active openings in your hiring workspace</p>
+        </article>
+        <article class="recruiter-stat-card blue">
+            <span class="recruiter-stat-label">Total Applications</span>
+            <strong>{{ stats.applications }}</strong>
+            <p>Candidates currently in your pipeline</p>
+        </article>
+        <article class="recruiter-stat-card green">
+            <span class="recruiter-stat-label">Active Candidates</span>
+            <strong>{{ stats.candidates }}</strong>
+            <p>Unique applicants across your open roles</p>
+        </article>
+        <article class="recruiter-stat-card amber">
+            <span class="recruiter-stat-label">Shortlisted</span>
+            <strong>{{ stats.shortlisted }}</strong>
+            <p>Profiles that moved into priority review</p>
+        </article>
+    </section>
+
+    <section class="recruiter-panel-grid">
+        <article class="recruiter-panel wide">
+            <div class="recruiter-panel-head">
+                <h3>Recent Jobs</h3>
+                <a href="{{ url_for('recruiter.jobs') }}">View all jobs</a>
+            </div>
+
+            {% for job in recent_jobs %}
+                <div class="recruiter-job-row">
+                    <div class="recruiter-job-badge">{{ job.title[:2]|upper }}</div>
+                    <div class="recruiter-job-main">
+                        <strong>{{ job.title }}</strong>
+                        <span>{{ job.experience_level }}{% if job.skills %} • {{ job.skills[:2]|join(', ') }}{% endif %}</span>
+                    </div>
+                    <div class="recruiter-job-meta">
+                        <strong>{{ job.created_at.strftime('%d %b %Y') }}</strong>
+                        <span>Posted</span>
+                    </div>
+                    <div class="recruiter-job-meta">
+                        <strong>{{ job.applications }}</strong>
+                        <span>Applications</span>
+                    </div>
+                </div>
+            {% else %}
+                <section class="empty-state"><p>No jobs published yet.</p></section>
+            {% endfor %}
+        </article>
+
+        <article class="recruiter-panel">
+            <div class="recruiter-panel-head">
+                <h3>Application Stream</h3>
+                <a href="{{ url_for('recruiter.applications') }}">View all applications</a>
+            </div>
+
+            {% for item in stream %}
+                <div class="recruiter-stream-row">
+                    <div class="recruiter-stream-avatar">{{ item.initials }}</div>
+                    <div class="recruiter-stream-copy">
+                        <strong>{{ item.name }} {{ item.action|lower }} for {{ item.role }}</strong>
+                        <span>{{ item.time_ago }}</span>
+                    </div>
+                    <span class="recruiter-status-pill {{ item.status }}">{{ item.action }}</span>
+                </div>
+            {% else %}
+                <section class="empty-state"><p>No application activity yet.</p></section>
+            {% endfor %}
+        </article>
+    </section>
+
+    <section class="recruiter-panel-grid bottom">
+        <article class="recruiter-panel">
+            <div class="recruiter-panel-head">
+                <h3>Applications Overview</h3>
+            </div>
+            <div class="recruiter-overview">
+                <div class="recruiter-overview-ring">
+                    <strong>{{ stats.applications }}</strong>
+                    <span>Total</span>
+                </div>
+                <div class="recruiter-overview-list">
+                    {% for item in overview %}
+                        <div class="recruiter-overview-row">
+                            <span class="recruiter-dot {{ item.tone }}"></span>
+                            <span>{{ item.label }}</span>
+                            <strong>{{ item.value }} ({{ item.percent }}%)</strong>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </article>
+
+        <article class="recruiter-panel">
+            <div class="recruiter-panel-head">
+                <h3>Top Skills In Demand</h3>
+                <a href="{{ url_for('recruiter.analytics') }}">View report</a>
+            </div>
+            <div class="recruiter-skill-list">
+                {% for skill in skills %}
+                    <div class="recruiter-skill-row">
+                        <div class="recruiter-skill-copy">
+                            <strong>{{ skill.name }}</strong>
+                            <span>{{ skill.count }} roles</span>
+                        </div>
+                        <div class="recruiter-skill-bar"><div style="width: {{ skill.value }}%"></div></div>
+                        <strong class="recruiter-skill-value">{{ skill.value }}%</strong>
+                    </div>
+                {% else %}
+                    <section class="empty-state"><p>No skills data yet.</p></section>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="recruiter-panel">
+            <div class="recruiter-panel-head">
+                <h3>Source Of Applications</h3>
+            </div>
+            <div class="recruiter-overview">
+                <div class="recruiter-overview-ring secondary">
+                    <strong>{{ stats.applications }}</strong>
+                    <span>Total</span>
+                </div>
+                <div class="recruiter-overview-list">
+                    {% for item in sources %}
+                        <div class="recruiter-overview-row">
+                            <span class="recruiter-dot {{ item.tone }}"></span>
+                            <span>{{ item.label }}</span>
+                            <strong>{{ item.value }} ({{ item.percent }}%)</strong>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </article>
+    </section>
+</section>
+{% endblock %}

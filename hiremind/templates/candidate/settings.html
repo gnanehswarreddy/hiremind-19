@@ -1,0 +1,254 @@
+{% extends "candidate/base.html" %}
+{% block title %}Settings | HireMind{% endblock %}
+{% block page_title %}Candidate Settings{% endblock %}
+{% block page_subtitle %}Update your profile details and keep your candidate workspace current.{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="settings-shell" data-settings-form>
+    {{ form.hidden_tag() }}
+
+    <section class="settings-top-grid">
+        <article class="settings-card settings-card-wide">
+            <div class="settings-card-header">
+                <div class="settings-card-icon">P</div>
+                <div>
+                    <h2>Profile Information</h2>
+                    <p>Manage your personal information and how others see you.</p>
+                </div>
+            </div>
+
+            <div class="settings-profile-grid">
+                <div class="settings-avatar-stack">
+                    <div class="settings-avatar-frame">
+                        {% if profile.image_path %}
+                            <img src="{{ url_for('static', filename=profile.image_path) }}" alt="{{ form.name.data }} profile photo">
+                        {% else %}
+                            <span>{{ candidate_shell_initials }}</span>
+                        {% endif %}
+                    </div>
+                    <label class="settings-upload-chip" for="{{ form.image.id }}">Edit</label>
+                    {{ form.image(class_="settings-hidden-input", accept=".png,.jpg,.jpeg,.webp") }}
+                    <small>PNG, JPG or WEBP up to 2 MB</small>
+                </div>
+
+                <div class="settings-fields-grid">
+                    <div class="settings-field settings-field-full">
+                        {{ form.name.label }}
+                        {{ form.name(class_="settings-input") }}
+                    </div>
+                    <div class="settings-field">
+                        {{ form.email.label }}
+                        {{ form.email(class_="settings-input") }}
+                    </div>
+                    <div class="settings-field">
+                        {{ form.phone.label }}
+                        {{ form.phone(class_="settings-input") }}
+                    </div>
+                    <div class="settings-field">
+                        {{ form.location.label }}
+                        {{ form.location(class_="settings-input") }}
+                    </div>
+                    <div class="settings-field">
+                        {{ form.linkedin.label }}
+                        {{ form.linkedin(class_="settings-input") }}
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="settings-card settings-card-wide">
+            <div class="settings-card-header">
+                <div class="settings-card-icon">C</div>
+                <div>
+                    <h2>Career Details</h2>
+                    <p>Add your career information to help us find better opportunities for you.</p>
+                </div>
+            </div>
+
+            <div class="settings-fields-grid settings-fields-grid-tight">
+                <div class="settings-field">
+                    {{ form.role.label }}
+                    {{ form.role(class_="settings-input") }}
+                </div>
+                <div class="settings-field">
+                    {{ form.experience.label }}
+                    {{ form.experience(class_="settings-input") }}
+                </div>
+                <div class="settings-field settings-field-full">
+                    {{ form.skills.label }}
+                    {{ form.skills(class_="settings-input", placeholder="React, JavaScript, Tailwind CSS, Node.js") }}
+                </div>
+                <div class="settings-field">
+                    {{ form.preferred_role.label }}
+                    {{ form.preferred_role(class_="settings-input") }}
+                </div>
+                <div class="settings-field">
+                    {{ form.salary.label }}
+                    {{ form.salary(class_="settings-input") }}
+                </div>
+                <div class="settings-field settings-field-full">
+                    {{ form.availability.label }}
+                    {{ form.availability(class_="settings-input") }}
+                </div>
+            </div>
+
+            <div class="settings-skill-pills">
+                {% for skill in (form.skills.data or "").split(",") if skill.strip() %}
+                    <span>{{ skill.strip() }}</span>
+                {% endfor %}
+            </div>
+        </article>
+    </section>
+
+    <section class="settings-bottom-grid">
+        <article class="settings-card">
+            <div class="settings-card-header">
+                <div class="settings-card-icon">R</div>
+                <div>
+                    <h2>Resume &amp; Documents</h2>
+                    <p>Upload and manage your resumes and supporting documents.</p>
+                </div>
+            </div>
+
+            <div class="settings-resume-item">
+                <div class="settings-resume-icon">PDF</div>
+                <div class="settings-resume-copy">
+                    <strong>{{ latest_resume.filename if latest_resume else "No resume uploaded yet" }}</strong>
+                    <span>
+                        {% if latest_resume %}
+                            Uploaded on {{ latest_resume.created_at.strftime('%d %b %Y') }}
+                        {% else %}
+                            Add a resume to unlock match scoring and AI analysis.
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <div class="settings-action-row">
+                <a href="{{ url_for('candidate.upload') }}" class="settings-button settings-button-secondary">Upload New Resume</a>
+                <a href="{{ url_for('candidate.resume_builder') }}" class="settings-button settings-button-primary">Build / Optimize Resume</a>
+            </div>
+        </article>
+
+        <article class="settings-card">
+            <div class="settings-card-header">
+                <div class="settings-card-icon">N</div>
+                <div>
+                    <h2>Notifications</h2>
+                    <p>Choose what updates you want to receive.</p>
+                </div>
+            </div>
+
+            <div class="settings-toggle-list">
+                <label class="settings-toggle-row">
+                    <span>
+                        <strong>Job alerts</strong>
+                        <small>Get notified about new job matches.</small>
+                    </span>
+                    <span class="settings-toggle">
+                        {{ form.job_alerts }}
+                        <i></i>
+                    </span>
+                </label>
+                <label class="settings-toggle-row">
+                    <span>
+                        <strong>Application updates</strong>
+                        <small>Updates on your job applications.</small>
+                    </span>
+                    <span class="settings-toggle">
+                        {{ form.application_updates }}
+                        <i></i>
+                    </span>
+                </label>
+                <label class="settings-toggle-row">
+                    <span>
+                        <strong>Interview reminders</strong>
+                        <small>Reminders for upcoming interviews.</small>
+                    </span>
+                    <span class="settings-toggle">
+                        {{ form.interview_reminders }}
+                        <i></i>
+                    </span>
+                </label>
+                <label class="settings-toggle-row">
+                    <span>
+                        <strong>Email notifications</strong>
+                        <small>Receive emails for important updates.</small>
+                    </span>
+                    <span class="settings-toggle">
+                        {{ form.email_notifications }}
+                        <i></i>
+                    </span>
+                </label>
+            </div>
+        </article>
+
+        <article class="settings-card">
+            <div class="settings-card-header">
+                <div class="settings-card-icon">A</div>
+                <div>
+                    <h2>Account &amp; Security</h2>
+                    <p>Manage your account security settings.</p>
+                </div>
+            </div>
+
+            <div class="settings-security-list">
+                <a href="{{ url_for('auth.forgot_password') }}" class="settings-security-row">
+                    <span>
+                        <strong>Change password</strong>
+                        <small>Update your account password securely.</small>
+                    </span>
+                    <b>&rsaquo;</b>
+                </a>
+                <div class="settings-security-row is-muted">
+                    <span>
+                        <strong>Two-factor authentication</strong>
+                        <small>Add extra security to your account.</small>
+                    </span>
+                    <b>Soon</b>
+                </div>
+                <div class="settings-security-row is-muted">
+                    <span>
+                        <strong>Active sessions</strong>
+                        <small>Review your recent sign-ins and devices.</small>
+                    </span>
+                    <b>1</b>
+                </div>
+            </div>
+
+            <form method="post" action="{{ url_for('auth.delete_account') }}" class="settings-danger-zone" onsubmit="return confirm('Delete your account permanently? This action cannot be undone.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="settings-button settings-button-danger">Delete Account</button>
+            </form>
+        </article>
+
+        <article class="settings-card">
+            <div class="settings-card-header">
+                <div class="settings-card-icon">P</div>
+                <div>
+                    <h2>Preferences</h2>
+                    <p>Customize your experience on HireMind.</p>
+                </div>
+            </div>
+
+            <div class="settings-fields-grid settings-fields-grid-triple">
+                <div class="settings-field">
+                    {{ form.theme.label }}
+                    {{ form.theme(class_="settings-input") }}
+                </div>
+                <div class="settings-field">
+                    {{ form.language.label }}
+                    {{ form.language(class_="settings-input") }}
+                </div>
+                <div class="settings-field">
+                    {{ form.timezone.label }}
+                    {{ form.timezone(class_="settings-input") }}
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <div class="settings-submit-bar" data-settings-savebar>
+        {{ form.submit(class_="settings-submit-button") }}
+    </div>
+</form>
+{% endblock %}

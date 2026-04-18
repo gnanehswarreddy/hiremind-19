@@ -1,0 +1,89 @@
+{% extends "candidate/base.html" %}
+{% block title %}Job Matches | HireMind{% endblock %}
+{% block page_title %}Job Matching{% endblock %}
+{% block page_subtitle %}AI-powered personalized job recommendations based on your current HireMind profile.{% endblock %}
+{% block content %}
+<section class="job-matching-shell">
+    <section class="job-search-summary">
+        <div>
+            <strong>
+                {% if search_query %}
+                    {{ search_count }} result{{ '' if search_count == 1 else 's' }} for "{{ search_query }}"
+                {% else %}
+                    Browse all available job matches
+                {% endif %}
+            </strong>
+            <p>Search by title, company, skill, location, work mode, or experience level.</p>
+        </div>
+        {% if search_query %}
+            <a class="job-search-clear" href="{{ url_for('candidate.jobs') }}">Clear search</a>
+        {% endif %}
+    </section>
+
+    {% for item in jobs_data %}
+        <article class="job-match-card">
+            <div class="job-match-top">
+                <div>
+                    <h2>{{ item.job.title }}</h2>
+                    <p class="job-match-company">{{ item.company }}</p>
+                </div>
+                <span class="job-match-score">{{ item.fit.fit_score|round|int }}%</span>
+            </div>
+
+            <p class="job-match-copy">{{ item.fit.explanation }}</p>
+
+            <div class="job-match-bars">
+                <div class="job-match-bar-row">
+                    <span>Skill</span>
+                    <div class="job-match-bar"><div style="width: {{ item.breakdown.skill }}%"></div></div>
+                    <strong>{{ item.breakdown.skill }}%</strong>
+                </div>
+                <div class="job-match-bar-row">
+                    <span>Experience</span>
+                    <div class="job-match-bar"><div style="width: {{ item.breakdown.exp }}%"></div></div>
+                    <strong>{{ item.breakdown.exp }}%</strong>
+                </div>
+                <div class="job-match-bar-row">
+                    <span>Projects</span>
+                    <div class="job-match-bar"><div style="width: {{ item.breakdown.project }}%"></div></div>
+                    <strong>{{ item.breakdown.project }}%</strong>
+                </div>
+                <div class="job-match-bar-row">
+                    <span>Cognitive</span>
+                    <div class="job-match-bar"><div style="width: {{ item.breakdown.cognitive }}%"></div></div>
+                    <strong>{{ item.breakdown.cognitive }}%</strong>
+                </div>
+                <div class="job-match-bar-row">
+                    <span>Growth</span>
+                    <div class="job-match-bar"><div style="width: {{ item.breakdown.growth }}%"></div></div>
+                    <strong>{{ item.breakdown.growth }}%</strong>
+                </div>
+                <div class="job-match-bar-row">
+                    <span>Context</span>
+                    <div class="job-match-bar"><div style="width: {{ item.breakdown.context }}%"></div></div>
+                    <strong>{{ item.breakdown.context }}%</strong>
+                </div>
+            </div>
+
+            <div class="job-match-footer">
+                <div class="job-match-tags">
+                    {% for skill in item.job.skills[:4] %}
+                        <span class="tag">{{ skill }}</span>
+                    {% endfor %}
+                </div>
+                <a class="job-match-button" href="{{ url_for('candidate.job_detail', id=item.job._id|string, q=search_query) }}">View Job</a>
+            </div>
+        </article>
+    {% else %}
+        <section class="empty-state">
+            <p>
+                {% if search_query %}
+                    No jobs matched "{{ search_query }}". Try a title, company, skill, or location keyword.
+                {% else %}
+                    No jobs available right now.
+                {% endif %}
+            </p>
+        </section>
+    {% endfor %}
+</section>
+{% endblock %}

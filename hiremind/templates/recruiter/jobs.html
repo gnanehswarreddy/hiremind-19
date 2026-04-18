@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Your Jobs | HireMind{% endblock %}
+{% block page_title %}Your Jobs{% endblock %}
+{% block shell_header %}
+<header class="topbar recruiter-jobs-header">
+    <div>
+        <p class="eyebrow">AI-powered hiring intelligence</p>
+        <h1>Your Jobs</h1>
+        <p class="recruiter-jobs-subtitle">Manage and track all the jobs you've posted.</p>
+    </div>
+    <div class="recruiter-jobs-topbar-actions">
+        <button class="recruiter-icon-button" type="button" aria-label="Notifications">
+            <span class="recruiter-badge-dot">3</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-4H5l1.5-1.8V11a5.5 5.5 0 0 1 4.5-5.41V5a1 1 0 1 1 2 0v.59A5.5 5.5 0 0 1 17.5 11v5.2L19 18Z" fill="currentColor"/>
+            </svg>
+        </button>
+        <div class="recruiter-user-chip">
+            <span class="recruiter-user-avatar">{{ (current_user.name[:2] if current_user and current_user.name else "HM")|upper }}</span>
+            <div>
+                <strong>{{ current_user.name if current_user.is_authenticated else "Recruiter" }}</strong>
+                <span>Recruiter</span>
+            </div>
+        </div>
+        <a class="primary-button recruiter-create-job-btn" href="{{ url_for('recruiter.create_job') }}">
+            <span>+</span>
+            Create New Job
+        </a>
+    </div>
+</header>
+{% endblock %}
+{% block content %}
+<section class="recruiter-jobs-shell">
+    <section class="recruiter-jobs-stats-panel">
+        {% for item in stat_cards %}
+        <article class="recruiter-jobs-stat-item {{ item.tone }}">
+            <div class="recruiter-jobs-stat-icon">
+                {% if item.icon == "briefcase" %}
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V6h2.5A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-8A2.5 2.5 0 0 1 6.5 6H9Zm1.5 0h3V4.75h-3V6Z" fill="currentColor"/></svg>
+                {% elif item.icon == "people" %}
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm8 1a2.5 2.5 0 1 0-2.2-3.7A4.9 4.9 0 0 1 16 12Zm-8 1c-3.31 0-6 1.79-6 4v1h12v-1c0-2.21-2.69-4-6-4Zm8 0c-.85 0-1.66.12-2.39.34 1.43.87 2.39 2.15 2.39 3.66V18h6v-.8c0-2.32-2.69-4.2-6-4.2Z" fill="currentColor"/></svg>
+                {% elif item.icon == "person" %}
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" fill="currentColor"/></svg>
+                {% else %}
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5.7 0 9.94 4.51 10 4.58a1 1 0 0 1 0 1.35C21.94 11 17.7 15.5 12 15.5S2.06 11 2 10.93a1 1 0 0 1 0-1.35C2.06 9.51 6.3 5 12 5Zm0 8a3 3 0 1 0-3-3 3 3 0 0 0 3 3Z" fill="currentColor"/></svg>
+                {% endif %}
+            </div>
+            <div class="recruiter-jobs-stat-copy">
+                <span>{{ item.label }}</span>
+                <div class="recruiter-jobs-stat-value-row">
+                    <strong>{{ item.value }}</strong>
+                    <em>+{{ item.delta }}%</em>
+                </div>
+                <small>vs last month</small>
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+
+    <section class="recruiter-jobs-toolbar">
+        <div class="recruiter-jobs-search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Zm8.91 10.5 2.59 2.58-1.42 1.42-2.58-2.59 1.41-1.41Z" fill="currentColor"/></svg>
+            <input class="input" type="text" placeholder="Search jobs by title or keyword..." disabled>
+        </div>
+        <select class="input slim" disabled>
+            <option>All Status</option>
+        </select>
+        <select class="input slim" disabled>
+            <option>Newest First</option>
+        </select>
+    </section>
+
+    <section class="recruiter-job-list">
+        {% for row in rows %}
+            <article class="recruiter-job-card">
+                <div class="recruiter-job-card-main">
+                    <p class="eyebrow">{{ row.job.created_at.strftime('%d %b %Y') }}</p>
+                    <h2>{{ row.job.title }}</h2>
+                    <div class="recruiter-job-inline">
+                        <span class="recruiter-status-pill {{ row.status|lower }}">{{ row.status }}</span>
+                        <span>{{ row.job.job_type or 'Full-time' }}</span>
+                        <span>{{ row.work_mode }}</span>
+                        <span>{{ row.location_label }}</span>
+                        <span>{{ row.job.experience_level }}</span>
+                    </div>
+                    <p class="recruiter-job-desc">{{ row.description_preview }}</p>
+                    <div class="tag-row">
+                        {% for skill in row.job.skills[:5] %}
+                            <span class="tag">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="recruiter-job-card-metrics">
+                    <div class="recruiter-job-metric">
+                        <span>Applications</span>
+                        <strong>{{ row.applications }}</strong>
+                        <small>{{ row.new_applications }} New</small>
+                    </div>
+                    <div class="recruiter-job-metric">
+                        <span>Shortlisted</span>
+                        <strong>{{ row.shortlisted }}</strong>
+                        <small>{{ row.new_shortlisted }} New</small>
+                    </div>
+                    <div class="recruiter-job-metric">
+                        <span>Views</span>
+                        <strong>{{ row.views }}</strong>
+                        <small>&nbsp;</small>
+                    </div>
+                    <button class="recruiter-more-button" type="button" aria-label="More actions">
+                        <span></span><span></span><span></span>
+                    </button>
+                    <a class="ghost-button recruiter-match-button" href="{{ url_for('recruiter.matches', job_id=row.job._id|string) }}">View Matches</a>
+                </div>
+            </article>
+        {% else %}
+            <section class="empty-state">
+                <p>No jobs posted yet.</p>
+            </section>
+        {% endfor %}
+    </section>
+
+    <nav class="recruiter-jobs-pagination" aria-label="Jobs pagination">
+        <button type="button" aria-label="Previous page">&lt;</button>
+        {% for page in pagination %}
+        <button type="button" class="{% if page == 1 %}active{% endif %}">{{ page }}</button>
+        {% endfor %}
+        <span>...</span>
+        <button type="button">6</button>
+        <button type="button" aria-label="Next page">&gt;</button>
+    </nav>
+</section>
+{% endblock %}

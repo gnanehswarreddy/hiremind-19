@@ -1,0 +1,204 @@
+{% extends "candidate/base.html" %}
+{% block title %}Candidate Dashboard | HireMind{% endblock %}
+{% block page_title %}Welcome back, {{ current_user.name }}!{% endblock %}
+{% block page_subtitle %}Track your progress, improve your profile and land your dream job.{% endblock %}
+{% block content %}
+        <section class="metrics-grid">
+            <article class="metric-card">
+                <div class="metric-top">
+                    <div>
+                        <h3>R3 Resume Score</h3>
+                        <strong>{{ "%.1f"|format(resume_score) if resume_score is not none else "--" }}{% if resume_score is not none %}<span>/100</span>{% endif %}</strong>
+                    </div>
+                    <div class="metric-ring ring-green"></div>
+                </div>
+                <div class="metric-bottom">
+                    <span class="metric-status green">
+                        {% if resume_score is none %}Upload Resume{% elif resume_score >= 85 %}Excellent{% elif resume_score >= 70 %}Very Good{% else %}Improving{% endif %}
+                    </span>
+                    <span class="metric-trend">Up 4.2% this week</span>
+                </div>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-top">
+                    <div>
+                        <h3>Job Match Score</h3>
+                        <strong>{{ job_match_score }}%</strong>
+                    </div>
+                    <div class="metric-ring ring-violet"></div>
+                </div>
+                <div class="metric-bottom">
+                    <span class="metric-status violet">{% if job_match_score >= 85 %}Very Good{% elif job_match_score >= 70 %}Strong Match{% else %}Building{% endif %}</span>
+                    <span class="metric-trend">Up 6% this week</span>
+                </div>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-top">
+                    <div>
+                        <h3>Profile Strength</h3>
+                        <strong>{{ profile_strength }}%</strong>
+                    </div>
+                    <div class="metric-ring ring-blue"></div>
+                </div>
+                <div class="metric-bottom">
+                    <span class="metric-status blue">{% if profile_strength >= 85 %}Strong{% elif profile_strength >= 60 %}Growing{% else %}Needs Detail{% endif %}</span>
+                    <span class="metric-trend">Up 3% this week</span>
+                </div>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-top">
+                    <div>
+                        <h3>Applications</h3>
+                        <strong>{{ application_count }}</strong>
+                    </div>
+                    <div class="metric-ring ring-pink"></div>
+                </div>
+                <div class="metric-bottom">
+                    <span class="metric-caption">Total Applied</span>
+                    <a href="{{ url_for('candidate.applications') }}">View all</a>
+                </div>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-top">
+                    <div>
+                        <h3>Interviews</h3>
+                        <strong>{{ interviews_count }}</strong>
+                    </div>
+                    <div class="metric-ring ring-amber"></div>
+                </div>
+                <div class="metric-bottom">
+                    <span class="metric-caption">This Month</span>
+                    <a href="{{ url_for('candidate.applications') }}">View all</a>
+                </div>
+            </article>
+        </section>
+
+        <section class="content-grid">
+            <article class="panel panel-insights">
+                <div class="panel-head">
+                    <h3>AI Insights</h3>
+                    <a href="{{ url_for('candidate.analysis', id=latest_resume._id|string) if latest_resume else url_for('candidate.upload') }}">View all</a>
+                </div>
+                <div class="insight-list">
+                    {% for item in insight_items %}
+                        <div class="insight-row">
+                            <span class="insight-icon">{{ loop.index }}</span>
+                            <div>
+                                <strong>{{ item }}</strong>
+                                <p>Focused improvements here can strengthen your applications.</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <article class="panel panel-matches">
+                <div class="panel-head">
+                    <h3>Top Job Matches</h3>
+                    <a href="{{ url_for('candidate.recommendations') }}">View all</a>
+                </div>
+                <div class="match-list">
+                    {% for item in top_matches %}
+                        <div class="match-row">
+                            <div class="match-icon">{{ loop.index }}</div>
+                            <div class="match-copy">
+                                <strong>{{ item.job.title }}</strong>
+                                <p>{{ item.job.experience_level }} | {{ item.job.skills[:2]|join(", ") if item.job.skills else "Generalist role" }}</p>
+                                <div class="match-tags">
+                                    {% for skill in item.job.skills[:3] %}
+                                        <span>{{ skill }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="match-score">
+                                <strong>{{ item.match.cfma.fit_score|round|int }}%</strong>
+                                <span>Match</span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="empty-copy">Upload a resume to unlock personalized job matches.</p>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <article class="panel panel-tracker">
+                <div class="panel-head">
+                    <h3>Application Tracker</h3>
+                    <a href="{{ url_for('candidate.applications') }}">View all</a>
+                </div>
+                <div class="tracker-chart" style="--applied: {{ status_counts.submitted }}; --shortlisted: {{ status_counts.shortlisted }}; --interview: {{ status_counts.interview or interviews_count }}; --rejected: {{ status_counts.rejected }};"></div>
+                <div class="tracker-legend">
+                    <div><span class="dot applied"></span>Applied <strong>{{ application_count }}</strong></div>
+                    <div><span class="dot shortlisted"></span>Shortlisted <strong>{{ status_counts.shortlisted }}</strong></div>
+                    <div><span class="dot interview"></span>Interview <strong>{{ interviews_count }}</strong></div>
+                    <div><span class="dot rejected"></span>Rejected <strong>{{ status_counts.rejected }}</strong></div>
+                </div>
+                <div class="tracker-footer">
+                    <div>
+                        <span>Success Rate</span>
+                        <strong>{{ success_rate }}%</strong>
+                    </div>
+                    <span class="trend-up">Up 12% this month</span>
+                </div>
+            </article>
+        </section>
+
+        <section class="bottom-grid">
+            <article class="panel">
+                <div class="panel-head">
+                    <h3>Resume Overview</h3>
+                    <a href="{{ url_for('candidate.resumes') }}">View all</a>
+                </div>
+                {% if latest_resume %}
+                    <div class="resume-row">
+                        <div class="resume-icon">R</div>
+                        <div class="resume-copy">
+                            <strong>{{ latest_resume.filename }}</strong>
+                            <p>Uploaded on {{ latest_resume.created_at.strftime('%d %b %Y') }}</p>
+                        </div>
+                        <div class="resume-score">{{ "%.0f"|format(resume_score) if resume_score is not none else "--" }}/100</div>
+                    </div>
+                {% else %}
+                    <p class="empty-copy">Upload your first resume to populate this section.</p>
+                {% endif %}
+            </article>
+
+            <article class="panel">
+                <div class="panel-head">
+                    <h3>Skill Gap Analysis</h3>
+                    <a href="{{ url_for('candidate.recommendations') }}">View all</a>
+                </div>
+                <div class="skill-list">
+                    {% for item in skill_gap_rows %}
+                        <div class="skill-row">
+                            <div class="skill-label">{{ item.label }}</div>
+                            <div class="skill-bar"><span style="width: {{ item.percent }}%"></span></div>
+                            <div class="skill-value">{{ item.percent }}%</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-head">
+                    <h3>Recommended for You</h3>
+                    <a href="{{ url_for('candidate.recommendations') }}">View all</a>
+                </div>
+                <div class="recommendation-list">
+                    {% for item in recommended_items %}
+                        <div class="recommend-row">
+                            <div class="recommend-icon">{{ loop.index }}</div>
+                            <div>
+                                <strong>{{ item }}</strong>
+                                <p>Personalized next step based on your current fit profile.</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+        </section>
+{% endblock %}

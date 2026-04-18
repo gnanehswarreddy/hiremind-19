@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Matches | HireMind{% endblock %}
+{% block page_title %}Candidate Matches for {{ job.title }}{% endblock %}
+{% block content %}
+<section class="cards-grid">
+    {% for row in ranked %}
+        <article class="panel-card">
+            <p class="eyebrow">{{ row.fit_score }}% fit</p>
+            <h3>{{ row.candidate.name }}</h3>
+            <p>{{ row.explanation }}</p>
+            <p><strong>R3 Score:</strong> {{ row.resume.scores.final_score }}</p>
+            <p><strong>Holistic score:</strong> {{ row.holistic_score }}</p>
+            <p><strong>Matched skills:</strong> {{ row.algorithm_breakdown.wsms.matched_skills|join(', ') if row.algorithm_breakdown.wsms.matched_skills else 'No direct overlap yet' }}</p>
+            <p><strong>Cognitive fit:</strong> {{ row.algorithm_breakdown.cmm.cognitive_fit_score }}</p>
+            <a href="{{ url_for('recruiter.candidate_profile', id=row.candidate._id|string) }}">Review profile</a>
+        </article>
+    {% else %}
+        <p>No candidates with resume data yet.</p>
+    {% endfor %}
+</section>
+{% endblock %}

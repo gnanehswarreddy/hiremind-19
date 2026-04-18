@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Applications | HireMind{% endblock %}
+{% block page_title %}Application Management{% endblock %}
+{% block content %}
+<section class="table-card">
+    <table>
+        <thead><tr><th>Candidate</th><th>Job</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for row in rows %}
+            <tr>
+                <td>{{ row.candidate.name }}</td>
+                <td>{{ row.job.title }}</td>
+                <td>{{ row.application.status|title }}</td>
+                <td>
+                    <div class="inline-form">
+                    <form method="post" class="inline-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="application_id" value="{{ row.application._id }}">
+                        <select name="status" class="input slim">
+                            <option value="submitted">Submitted</option>
+                            <option value="shortlisted">Shortlisted</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        <button class="ghost-button" type="submit">Update</button>
+                    </form>
+                    <a class="ghost-button" href="{{ url_for('recruiter.messages', chat=row.chat_id) }}">Chat</a>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="4">No applications yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

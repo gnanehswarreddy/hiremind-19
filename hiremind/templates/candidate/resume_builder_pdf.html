@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ resume_data.name or "HireMind Resume" }}</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #1d2740;
+            --muted: #5f6f8f;
+            --accent: #5d4dff;
+            --line: #dbe3f2;
+            --chip: #efecff;
+            --paper: #ffffff;
+            --bg: #f3f5fb;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: var(--ink);
+            background: var(--bg);
+        }
+
+        .paper {
+            max-width: 860px;
+            margin: 0 auto;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            padding: 36px 40px;
+        }
+
+        .notice {
+            margin: 0 auto 16px;
+            max-width: 860px;
+            padding: 12px 14px;
+            border: 1px solid #cfd8ee;
+            border-radius: 14px;
+            background: #ffffff;
+            color: var(--muted);
+        }
+
+        .hero {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .avatar {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #6f5cff, #8ea1ff);
+            color: #fff;
+            font-size: 2rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+            line-height: 1.05;
+        }
+
+        .role {
+            margin: 8px 0 0;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.12rem;
+        }
+
+        .contacts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 22px;
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .section {
+            margin-top: 26px;
+        }
+
+        .section-title {
+            margin: 0 0 12px;
+            color: var(--accent);
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        p {
+            margin: 0;
+            line-height: 1.65;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: var(--chip);
+            color: var(--accent);
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 20px;
+            line-height: 1.7;
+        }
+
+        li + li {
+            margin-top: 8px;
+        }
+
+        .empty {
+            color: var(--muted);
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+
+            .paper {
+                border: none;
+                border-radius: 0;
+                padding: 0;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if print_mode %}
+        <div class="notice">PDF dependencies are not installed yet, so this is a print-ready version. Use your browser's Print or Save as PDF option.</div>
+    {% endif %}
+    <article class="paper">
+        <header class="hero">
+            <div class="avatar">{{ (resume_data.name[:1] if resume_data.name else "Y")|upper }}</div>
+            <div>
+                <h1>{{ resume_data.name or "Your Name" }}</h1>
+                <div class="role">{{ resume_data.title or "Your Role" }}</div>
+                <div class="contacts">
+                    {% if resume_data.email %}<span>{{ resume_data.email }}</span>{% endif %}
+                    {% if resume_data.phone %}<span>{{ resume_data.phone }}</span>{% endif %}
+                    {% if resume_data.location %}<span>{{ resume_data.location }}</span>{% endif %}
+                    {% if resume_data.linkedin %}<span>{{ resume_data.linkedin }}</span>{% endif %}
+                </div>
+            </div>
+        </header>
+
+        <section class="section">
+            <h2 class="section-title">Professional Summary</h2>
+            <p class="{{ 'empty' if not resume_data.summary else '' }}">{{ resume_data.summary or "Add a strong summary to describe your experience, strengths, and target role." }}</p>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Skills</h2>
+            <div class="chips">
+                {% for skill in resume_data.skills %}
+                    <span class="chip">{{ skill }}</span>
+                {% else %}
+                    <span class="empty">Add your core skills to populate this section.</span>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Work Experience</h2>
+            {% if resume_data.experience %}
+                <ul>{% for item in resume_data.experience %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% else %}
+                <p class="empty">Add experience highlights and measurable outcomes.</p>
+            {% endif %}
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Education</h2>
+            {% if resume_data.education %}
+                <ul>{% for item in resume_data.education %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% else %}
+                <p class="empty">Add your degree, school, and graduation timeline.</p>
+            {% endif %}
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Projects</h2>
+            {% if resume_data.projects %}
+                <ul>{% for item in resume_data.projects %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% else %}
+                <p class="empty">Add one or two proof-of-work projects.</p>
+            {% endif %}
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Certifications</h2>
+            {% if resume_data.certifications %}
+                <ul>{% for item in resume_data.certifications %}<li>{{ item }}</li>{% endfor %}</ul>
+            {% else %}
+                <p class="empty">Add relevant certifications or role-based credentials.</p>
+            {% endif %}
+        </section>
+    </article>
+</body>
+</html>

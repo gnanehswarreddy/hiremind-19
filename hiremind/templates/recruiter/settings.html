@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Settings | HireMind{% endblock %}
+{% block page_title %}Recruiter Settings{% endblock %}
+{% block content %}
+<section class="form-card">
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.name.label }}
+            {{ form.name(class_="input") }}
+        </div>
+        <div class="form-group">
+            <label>Contact Email</label>
+            <input class="input" value="{{ contact_email }}" disabled>
+        </div>
+        {{ form.submit(class_="primary-button") }}
+    </form>
+
+    <div class="recruiter-danger-zone">
+        <h3>Danger Zone</h3>
+        <p>Delete your recruiter account and remove your jobs, applications, and profile data permanently.</p>
+        <form method="post" action="{{ url_for('auth.delete_account') }}" onsubmit="return confirm('Delete your account permanently? This action cannot be undone.');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="danger-button" type="submit">Delete Account</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

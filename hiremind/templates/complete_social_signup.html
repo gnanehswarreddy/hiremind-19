@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Signup | HireMind</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+    <main class="auth-page">
+        <button class="auth-theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">
+            <span class="theme-toggle-icon" data-theme-icon>🌙</span>
+        </button>
+
+        <div class="container">
+            <section class="left-panel light">
+                <div class="brand-mark">
+                    <span class="logo">HM</span>
+                    <span>HireMind</span>
+                </div>
+
+                <div class="hero-copy">
+                    <p class="eyebrow">One More Step</p>
+                    <h2>Finish your signup<br><span>Choose your workspace</span></h2>
+                    <p>We found your Google account. Choose whether you want to continue as a candidate or a recruiter before we create your HireMind workspace.</p>
+
+                    <div class="feature-list">
+                        <div class="feature-pill">Google account connected</div>
+                        <div class="feature-pill">Role-based onboarding</div>
+                        <div class="feature-pill">Dashboard built around your workflow</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="right-panel">
+                <form method="POST" action="{{ url_for('auth.complete_social_signup') }}" class="auth-form">
+                    {{ form.hidden_tag() }}
+
+                    <h2>Complete Google Signup</h2>
+                    <p class="auth-subtitle">Choose how you want to use HireMind</p>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <section class="flash-stack">
+                                {% for category, message in messages %}
+                                    <div class="flash flash-{{ category }}">{{ message }}</div>
+                                {% endfor %}
+                            </section>
+                        {% endif %}
+                    {% endwith %}
+
+                    <div class="auth-account-preview">
+                        <strong>{{ pending_signup.name }}</strong>
+                        <span>{{ pending_signup.email }}</span>
+                    </div>
+
+                    <div class="field">
+                        {{ form.role.label }}
+                        {{ form.role(class_="input") }}
+                    </div>
+
+                    {{ form.submit(class_="btn-primary", value="Continue") }}
+
+                    <p class="link">
+                        Want to use a different account?
+                        <a href="{{ url_for('auth.signup') }}">Back to signup</a>
+                    </p>
+                </form>
+            </section>
+        </div>
+    </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

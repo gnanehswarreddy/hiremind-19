@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% block title %}HireMind | Smarter Hiring, Better Futures{% endblock %}
+{% block body_class %}landing-body{% endblock %}
+{% block shell_header %}{% endblock %}
+{% block content %}
+<div class="hm-page">
+    <div class="hm-blob hm-blob-a"></div>
+    <div class="hm-blob hm-blob-b"></div>
+    <div class="hm-blob hm-blob-c"></div>
+
+    <nav class="hm-nav">
+        <a href="{{ url_for('landing') }}" class="hm-logo">
+            <span class="hm-logo-mark">
+                <svg viewBox="0 0 32 32" aria-hidden="true">
+                    <path d="M12 6.5a6.5 6.5 0 0 0-5 10.7V22a2 2 0 0 0 2 2h2V8.4c.33-.1.67-.19 1-.26Zm8 0V24h3a2 2 0 0 0 2-2v-4.8a6.5 6.5 0 0 0-5-10.7ZM16 5c-1.03 0-2.02.16-2.94.46V24h1.94v-4.2h2V24h1.94V5.46A10.28 10.28 0 0 0 16 5Zm-1 9h2v-2h-2Zm0 4h2v-2h-2Z" fill="currentColor"/>
+                </svg>
+            </span>
+            <span>HireMind</span>
+        </a>
+
+        <div class="hm-menu">
+            <a href="#home">Home</a>
+            <a href="#candidates">For Candidates</a>
+            <a href="#recruiters">For Recruiters</a>
+            <a href="#features">Features</a>
+            <a href="#how">How It Works</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#about">About</a>
+        </div>
+
+        <div class="hm-nav-actions">
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">
+                <span class="theme-toggle-icon" data-theme-icon>🌙</span>
+            </button>
+            <a class="hm-login" href="{{ url_for('auth.login') }}">Login</a>
+            <a class="hm-start" href="{{ url_for('auth.signup') }}">Get Started</a>
+        </div>
+    </nav>
+
+    <section class="hm-hero hm-reveal is-visible" id="home">
+        <div class="hm-left">
+            <div class="hm-badge hm-fade-up" style="--hm-delay: 0.08s;">
+                <span class="hm-badge-dot">✦</span>
+                <span>AI-Powered Hiring Intelligence</span>
+            </div>
+
+            <h1 class="hm-title hm-fade-up" style="--hm-delay: 0.16s;">
+                Smarter Hiring.
+                <span>Better Futures.</span>
+            </h1>
+
+            <p class="hm-copy hm-fade-up" style="--hm-delay: 0.24s;">
+                HireMind uses advanced AI models to understand resumes, match the right talent, and help everyone land their perfect opportunity.
+            </p>
+
+            <div class="hm-hero-actions hm-fade-up" style="--hm-delay: 0.32s;">
+                <a class="hm-candidate-btn" href="{{ url_for('auth.signup') }}">I'm a Candidate</a>
+                <a class="hm-recruiter-btn" href="{{ url_for('auth.signup') }}">I'm a Recruiter</a>
+            </div>
+
+            <div class="hm-trust hm-fade-up" style="--hm-delay: 0.4s;">
+                <span>AI-Powered Matching</span>
+                <span>Fair &amp; Bias-Free</span>
+                <span>Secure &amp; Private</span>
+            </div>
+        </div>
+
+        <div class="hm-right">
+            <div class="hm-dashboard hm-dashboard-enter">
+                <div class="hm-card hm-score-card hm-float-card" style="--hm-delay: 0.18s;">
+                    <h4>Overall Match Score</h4>
+                    <div class="hm-score-flex">
+                        <div>
+                            <strong>92%</strong>
+                            <p>Excellent Match!</p>
+                        </div>
+                        <div class="hm-donut">
+                            <div class="hm-donut-inner"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hm-card hm-skills-card hm-float-card" style="--hm-delay: 0.3s;">
+                    <h4>Top Skills Match</h4>
+                    <div class="hm-skill-item"><span>Python</span><b>98%</b><i class="skill-98"></i></div>
+                    <div class="hm-skill-item"><span>Machine Learning</span><b>95%</b><i class="skill-95"></i></div>
+                    <div class="hm-skill-item"><span>SQL</span><b>90%</b><i class="skill-90"></i></div>
+                    <div class="hm-skill-item"><span>Data Analysis</span><b>88%</b><i class="skill-88"></i></div>
+                </div>
+
+                <div class="hm-card hm-graph-card hm-float-card" style="--hm-delay: 0.42s;">
+                    <h4>Candidate Fit Summary</h4>
+                    <div class="hm-graph-tag">Great Fit<br>92%</div>
+                    <svg viewBox="0 0 320 150" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="hmArea" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#8b72ff" stop-opacity="0.35"/>
+                                <stop offset="100%" stop-color="#8b72ff" stop-opacity="0.02"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M0 140 C30 135,45 84,74 89 S118 117,145 92 S194 122,226 90 S270 56,320 44 L320 150 L0 150 Z" fill="url(#hmArea)"/>
+                        <path d="M0 140 C30 135,45 84,74 89 S118 117,145 92 S194 122,226 90 S270 56,320 44" fill="none" stroke="#7e67ff" stroke-width="5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+
+                <div class="hm-card hm-radar-card hm-float-card" style="--hm-delay: 0.54s;">
+                    <h4>Cognitive Fit</h4>
+                    <div class="hm-radar">
+                        <div class="hm-radar-grid outer"></div>
+                        <div class="hm-radar-grid mid"></div>
+                        <div class="hm-radar-grid inner"></div>
+                        <div class="hm-radar-fill"></div>
+                        <span class="r1">Analytical</span>
+                        <span class="r2">Communicator</span>
+                        <span class="r3">Problem Solver</span>
+                        <span class="r4">Leader</span>
+                        <span class="r5">Adaptable</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hm-section-shell hm-reveal" id="features">
+        <div class="hm-section-title">
+            <h2>Built for <span>Everyone</span> in the Hiring Journey</h2>
+        </div>
+
+        <div class="hm-audience-grid">
+            <article class="hm-audience-card hm-audience-candidate" id="candidates">
+                <div class="hm-illustration">
+                    <div class="hm-person-card purple">
+                        <div class="hm-head"></div>
+                        <div class="hm-body"></div>
+                        <div class="hm-laptop"></div>
+                    </div>
+                </div>
+                <div class="hm-audience-content">
+                    <h3>For Candidates</h3>
+                    <p>Showcase your true potential and get matched with jobs that fit you best.</p>
+                    <ul>
+                        <li>AI Resume Analysis</li>
+                        <li>Skill Gap Improvement</li>
+                        <li>Personalized Job Matches</li>
+                        <li>Application Tracking</li>
+                    </ul>
+                    <a href="{{ url_for('auth.signup') }}">Explore Candidate Features</a>
+                </div>
+            </article>
+
+            <article class="hm-audience-card hm-audience-recruiter" id="recruiters">
+                <div class="hm-audience-content">
+                    <h3>For Recruiters</h3>
+                    <p>Find, assess and hire the right talent faster with AI-driven insights.</p>
+                    <ul>
+                        <li>Intelligent Candidate Ranking</li>
+                        <li>Cognitive Fit Matching</li>
+                        <li>Detailed Analytics</li>
+                        <li>Bias-Free Hiring</li>
+                    </ul>
+                    <a href="{{ url_for('auth.signup') }}">Explore Recruiter Features</a>
+                </div>
+                <div class="hm-illustration">
+                    <div class="hm-person-card green">
+                        <div class="hm-head"></div>
+                        <div class="hm-body"></div>
+                        <div class="hm-laptop"></div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="hm-why hm-reveal" id="how">
+        <div class="hm-section-title">
+            <h2>Why Choose HireMind?</h2>
+        </div>
+
+        <div class="hm-why-grid">
+            <article class="hm-why-card">
+                <span class="hm-why-icon purple">AI</span>
+                <h3>AI-Powered Matching</h3>
+                <p>Advanced algorithms match skills, experience and cognitive traits for the best fit.</p>
+            </article>
+            <article class="hm-why-card">
+                <span class="hm-why-icon blue">CV</span>
+                <h3>Deep Resume Insights</h3>
+                <p>Get a comprehensive score across multiple dimensions with actionable feedback.</p>
+            </article>
+            <article class="hm-why-card">
+                <span class="hm-why-icon lavender">CF</span>
+                <h3>Cognitive Fit Analysis</h3>
+                <p>Beyond keywords, understand how well a candidate fits your team.</p>
+            </article>
+            <article class="hm-why-card">
+                <span class="hm-why-icon gold">AR</span>
+                <h3>Actionable Recommendations</h3>
+                <p>Personalized suggestions to improve resumes and upskill effectively.</p>
+            </article>
+            <article class="hm-why-card">
+                <span class="hm-why-icon sky">SP</span>
+                <h3>Secure &amp; Private</h3>
+                <p>Your data is encrypted and protected with enterprise-grade security.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="hm-stats hm-reveal" id="pricing">
+        <div class="hm-stat"><strong>10K+</strong><span>Active Candidates</span></div>
+        <div class="hm-stat"><strong>2K+</strong><span>Hiring Companies</span></div>
+        <div class="hm-stat"><strong>50K+</strong><span>Jobs Matched</span></div>
+        <div class="hm-stat"><strong>95%</strong><span>Match Accuracy</span></div>
+    </section>
+
+    <section class="hm-cta hm-reveal" id="about">
+        <div class="hm-cta-figure left">
+            <div class="hm-person-card purple thumbs"></div>
+        </div>
+        <div class="hm-cta-copy">
+            <h2>Ready to Transform the Way You Hire <br>(or Get Hired)?</h2>
+            <p>Join HireMind today and experience the future of hiring.</p>
+            <div class="hm-cta-actions">
+                <a class="hm-start" href="{{ url_for('auth.signup') }}">Get Started for Free</a>
+                <a class="hm-recruiter-btn" href="{{ url_for('auth.login') }}">Book a Demo</a>
+            </div>
+        </div>
+        <div class="hm-cta-figure right">
+            <div class="hm-person-card yellow point"></div>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Analytics | HireMind{% endblock %}
+{% block page_title %}Recruiting Analytics{% endblock %}
+{% block content %}
+<section class="dashboard-grid">
+    <article class="metric-card"><span>Total Jobs</span><strong>{{ jobs|length }}</strong></article>
+    <article class="metric-card"><span>Total Applications</span><strong>{{ applications|length }}</strong></article>
+    <article class="metric-card"><span>Shortlisted</span><strong>{{ shortlisted|length }}</strong></article>
+</section>
+<section class="panel-card">
+    <h3>Hiring Funnel Snapshot</h3>
+    <p>Submission rate reflects all inbound applications. Shortlist rate highlights the proportion of candidates advanced by recruiters.</p>
+    <div class="tag-row">
+        <span class="tag">Submission: {{ applications|length }}</span>
+        <span class="tag">Shortlist: {{ shortlisted|length }}</span>
+        <span class="tag">Open jobs: {{ jobs|length }}</span>
+    </div>
+</section>
+{% endblock %}

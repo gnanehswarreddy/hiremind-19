@@ -1,0 +1,33 @@
+{% extends "candidate/base.html" %}
+{% block title %}{{ job.title }} | HireMind{% endblock %}
+{% block page_title %}{{ job.title }}{% endblock %}
+{% block page_subtitle %}Review the role details, your fit score, and apply when you are ready.{% endblock %}
+{% block content %}
+<section class="panel-grid">
+    <article class="panel-card">
+        <p><strong>Recruiter:</strong> {{ recruiter_name }}</p>
+        <p><strong>Experience Level:</strong> {{ job.experience_level }}</p>
+        <p>{{ job.description }}</p>
+        <div class="tag-row">{% for skill in job.skills %}<span class="tag">{{ skill }}</span>{% endfor %}</div>
+        <div class="tag-row">{% for trait in job.cognitive_traits %}<span class="tag">{{ trait }}</span>{% endfor %}</div>
+    </article>
+    <article class="panel-card">
+        {% if fit %}
+            <p class="eyebrow">{{ fit.fit_score }}% fit</p>
+            <p>{{ fit.explanation }}</p>
+            <p><strong>Holistic score:</strong> {{ match.hcs.holistic_score }}</p>
+            <p><strong>Matched skills:</strong> {{ match.wsms.matched_skills|join(', ') if match.wsms.matched_skills else 'No direct overlap yet' }}</p>
+            <p><strong>Cognitive fit:</strong> {{ match.cmm.cognitive_fit_score }}</p>
+            <p><strong>Shared traits:</strong> {{ match.cmm.shared_traits|join(', ') if match.cmm.shared_traits else 'No shared traits yet' }}</p>
+            <p><strong>Missing skills:</strong> {{ match.sga.missing_skills|join(', ') if match.sga.missing_skills else 'None' }}</p>
+            <p><strong>Learning path:</strong> {{ match.lps|join(' | ') if match.lps else 'No extra learning path needed.' }}</p>
+        {% else %}
+            <p>Upload a resume to unlock fit scoring.</p>
+        {% endif %}
+        <form method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="primary-button" type="submit">Apply Now</button>
+        </form>
+    </article>
+</section>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "candidate/base.html" %}
+{% block title %}Resumes | HireMind{% endblock %}
+{% block page_title %}Resume Library{% endblock %}
+{% block page_subtitle %}Manage every uploaded or generated resume version in one place.{% endblock %}
+{% block content %}
+<section class="cards-grid">
+    {% for resume in resumes %}
+        <article class="panel-card resume-library-card">
+            <div class="resume-library-head">
+                <p class="eyebrow">{{ resume.created_at.strftime('%d %b %Y') }}</p>
+                {% if latest_resume_id == resume._id|string %}
+                    <span class="resume-library-badge">Latest</span>
+                {% endif %}
+            </div>
+            <h3>{{ resume.filename }}</h3>
+            <p>Final score: {{ resume.scores.final_score }}</p>
+            <div class="resume-library-actions">
+                <a href="{{ url_for('candidate.analysis', id=resume._id|string) }}" class="resume-library-link">View analysis</a>
+                <form method="post" action="{{ url_for('candidate.delete_resume', id=resume._id|string) }}" onsubmit="return confirm('Delete this resume permanently?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="resume-delete-button">Delete</button>
+                </form>
+            </div>
+        </article>
+    {% else %}
+        <section class="empty-state"><p>No resumes yet.</p></section>
+    {% endfor %}
+</section>
+{% endblock %}

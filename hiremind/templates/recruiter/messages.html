@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Recruiter Messages | HireMind{% endblock %}
+{% block page_title %}Messages{% endblock %}
+{% block content %}
+<section class="recruiter-messages-shell">
+    <aside class="recruiter-messages-list">
+        <div class="recruiter-panel-head">
+            <h3>Candidate Chats</h3>
+            <span class="pill">{{ chats|length }}</span>
+        </div>
+
+        <form method="get" action="{{ url_for('recruiter.messages') }}">
+            <input class="input" type="text" name="q" value="{{ search_query }}" placeholder="Search candidates or chats...">
+        </form>
+
+        <div class="recruiter-message-list">
+            {% for chat in chats %}
+                <a class="recruiter-message-item {% if active_chat and chat.id == active_chat.id %}active{% endif %}" href="{{ url_for('recruiter.messages', chat=chat.id, q=search_query) }}">
+                    <div class="recruiter-message-avatar">{{ chat.initials }}</div>
+                    <div class="recruiter-message-copy">
+                        <div class="recruiter-message-row">
+                            <strong>{{ chat.name }}</strong>
+                            <span>{{ chat.time.strftime('%b %d') if chat.time else '' }}</span>
+                        </div>
+                        <p>{{ chat.message }}</p>
+                        <small>{{ chat.job_title }}</small>
+                    </div>
+                </a>
+            {% else %}
+                <section class="empty-state"><p>No chats yet. Candidate messages will appear here.</p></section>
+            {% endfor %}
+        </div>
+    </aside>
+
+    <section class="recruiter-messages-thread">
+        <header class="recruiter-message-head">
+            <div>
+                <h3>{{ active_chat.name if active_chat else "No conversation selected" }}</h3>
+                <p>{{ active_chat.status if active_chat else "Select a candidate chat to start messaging." }}</p>
+            </div>
+        </header>
+
+        <div class="recruiter-message-body">
+            {% if thread %}
+                {% for msg in thread %}
+                    <article class="recruiter-bubble-row {{ msg.sender }}">
+                        <div class="recruiter-bubble {{ msg.sender }}">
+                            <p>{{ msg.text }}</p>
+                            <span>{{ msg.time.strftime('%b %d, %I:%M %p') if msg.time else '' }}</span>
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <section class="empty-state"><p>No messages yet in this conversation.</p></section>
+            {% endif %}
+        </div>
+
+        {% if active_chat %}
+            <form class="recruiter-message-form" method="post" action="{{ url_for('recruiter.send_message') }}">
+                {{ form.hidden_tag() }}
+                {{ form.message(class_="input", placeholder="Write a message to the candidate...") }}
+                <button class="primary-button" type="submit">Send</button>
+            </form>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}

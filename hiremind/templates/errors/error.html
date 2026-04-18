@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | HireMind{% endblock %}
+{% block page_title %}{{ code }} · {{ title }}{% endblock %}
+{% block content %}
+<section class="empty-state">
+    <p>{{ message }}</p>
+    <a class="primary-button" href="{{ url_for('landing') }}">Return Home</a>
+</section>
+{% endblock %}
