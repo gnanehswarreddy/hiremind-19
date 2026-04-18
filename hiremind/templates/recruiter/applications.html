@@ -4,12 +4,28 @@
 {% block content %}
 <section class="table-card">
     <table>
-        <thead><tr><th>Candidate</th><th>Job</th><th>Status</th><th>Action</th></tr></thead>
+        <thead><tr><th>Candidate</th><th>Job</th><th>A³ / Hire</th><th>AI Summary</th><th>Status</th><th>Action</th></tr></thead>
         <tbody>
         {% for row in rows %}
             <tr>
                 <td>{{ row.candidate.name }}</td>
                 <td>{{ row.job.title }}</td>
+                <td>
+                    {% if row.ai_analysis %}
+                        <strong>{{ row.ai_analysis.comparison.a3_score|round|int }}%</strong>
+                        <div>{{ row.ai_analysis.comparison.hiring_probability|round|int }}% hire</div>
+                    {% else %}
+                        <span>Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if row.ai_analysis %}
+                        <strong>{{ row.ai_analysis.insights.shortlist_recommendation }}</strong>
+                        <div>{{ row.ai_analysis.insights.summary }}</div>
+                    {% else %}
+                        <span>No AI summary yet.</span>
+                    {% endif %}
+                </td>
                 <td>{{ row.application.status|title }}</td>
                 <td>
                     <div class="inline-form">
@@ -24,11 +40,12 @@
                         <button class="ghost-button" type="submit">Update</button>
                     </form>
                     <a class="ghost-button" href="{{ url_for('recruiter.messages', chat=row.chat_id) }}">Chat</a>
+                    <a class="ghost-button" href="{{ url_for('recruiter.candidate_profile', id=row.candidate.id, job_id=row.job._id|string) }}">Review</a>
                     </div>
                 </td>
             </tr>
         {% else %}
-            <tr><td colspan="4">No applications yet.</td></tr>
+            <tr><td colspan="6">No applications yet.</td></tr>
         {% endfor %}
         </tbody>
     </table>

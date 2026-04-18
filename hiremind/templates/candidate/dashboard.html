@@ -77,6 +77,35 @@
             </article>
         </section>
 
+        <section class="feature-hub-panel panel">
+            <div class="panel-head">
+                <h3>Core Tools</h3>
+                <a href="{{ url_for('candidate.comparator') }}">Open Resume Comparator</a>
+            </div>
+            <div class="feature-hub">
+                <a class="feature-card" href="{{ url_for('candidate.resume_builder') }}">
+                    <span class="feature-eyebrow">Builder</span>
+                    <strong>Resume Builder</strong>
+                    <p>Create an ATS-friendly resume and export it as a clean PDF.</p>
+                </a>
+                <a class="feature-card feature-card-primary" href="{{ url_for('candidate.comparator') }}">
+                    <span class="feature-eyebrow">A&sup3; Match Engine</span>
+                    <strong>Resume Comparator</strong>
+                    <p>Run one advanced comparison flow with score breakdowns, hiring probability, and AI guidance.</p>
+                </a>
+                <a class="feature-card" href="{{ url_for('candidate.recommendations') }}">
+                    <span class="feature-eyebrow">Discovery</span>
+                    <strong>Job Recommendations</strong>
+                    <p>See where your skills fit best and which roles are worth applying to next.</p>
+                </a>
+                <a class="feature-card" href="{{ url_for('candidate.applications') }}">
+                    <span class="feature-eyebrow">Tracking</span>
+                    <strong>Application Tracker</strong>
+                    <p>Stay on top of submitted applications, shortlists, and interviews.</p>
+                </a>
+            </div>
+        </section>
+
         <section class="content-grid">
             <article class="panel panel-insights">
                 <div class="panel-head">
@@ -150,20 +179,25 @@
         <section class="bottom-grid">
             <article class="panel">
                 <div class="panel-head">
-                    <h3>Resume Overview</h3>
-                    <a href="{{ url_for('candidate.resumes') }}">View all</a>
+                    <h3>Latest Comparator Snapshot</h3>
+                    <a href="{{ url_for('candidate.comparator') }}">Open tool</a>
                 </div>
-                {% if latest_resume %}
-                    <div class="resume-row">
-                        <div class="resume-icon">R</div>
-                        <div class="resume-copy">
-                            <strong>{{ latest_resume.filename }}</strong>
-                            <p>Uploaded on {{ latest_resume.created_at.strftime('%d %b %Y') }}</p>
+                {% if latest_comparison %}
+                    <div class="comparator-snapshot">
+                        <div class="comparator-snapshot-score">
+                            <strong>{{ latest_comparison.a3_score|round|int }}%</strong>
+                            <span>A&sup3; Score</span>
                         </div>
-                        <div class="resume-score">{{ "%.0f"|format(resume_score) if resume_score is not none else "--" }}/100</div>
+                        <div class="comparator-snapshot-copy">
+                            <p><b>Hiring Probability:</b> {{ latest_comparison.hiring_probability|round|int }}%</p>
+                            <p><b>Top Gap:</b> {{ latest_comparison.skill_gaps[0] if latest_comparison.skill_gaps else "No critical gap detected" }}</p>
+                            {% if latest_comparison_explanation %}
+                                <p>{{ latest_comparison_explanation.summary }}</p>
+                            {% endif %}
+                        </div>
                     </div>
                 {% else %}
-                    <p class="empty-copy">Upload your first resume to populate this section.</p>
+                    <p class="empty-copy">Run the Resume Comparator to see your latest A&sup3; analysis here.</p>
                 {% endif %}
             </article>
 

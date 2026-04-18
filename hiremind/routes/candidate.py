@@ -2,8 +2,9 @@ import os
 import shutil
 from tempfile import NamedTemporaryFile
 
-from flask import Blueprint, current_app, flash, make_response, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, flash, jsonify, make_response, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from ai_core import explain_score
 from flask_wtf import FlaskForm
 from werkzeug.utils import secure_filename
 from wtforms import BooleanField, FileField, HiddenField, SelectField, StringField, SubmitField, TextAreaField
@@ -11,6 +12,7 @@ from wtforms.validators import DataRequired, Email, Length, Optional
 
 from models.activity_model import ActivityModel
 from models.ai_model import AIResultModel, RecommendationModel
+from models.comparison_model import ComparisonModel
 from models.job_model import ApplicationModel, JobModel
 from models.match_model import MatchScoreModel
 from models.message_model import MessageModel
@@ -20,6 +22,7 @@ from models.settings_model import UserSettingsModel
 from models.user_model import UserModel
 from services.parser import read_resume_file
 from services.improvement_engine import resume_improvement_engine
+from services.resume_comparator import compare_resume_to_job
 from services.system_core import analyze_resume_with_ses, match_candidate_to_job
 from utils.helpers import fetch_user_name, parse_comma_list
 from utils.security import allowed_file, role_required, sanitize_text
@@ -55,18 +58,15 @@ class ResumeUploadForm(FlaskForm):
 
 class ResumeBuilderForm(FlaskForm):
     name = StringField("Full name", validators=[DataRequired(), Length(min=2, max=80)])
-    title = StringField("Job title", validators=[DataRequired(), Length(min=2, max=80)])
     email = StringField("Email", validators=[Optional(), Length(max=120)])
     phone = StringField("Phone", validators=[Optional(), Length(max=40)])
     location = StringField("Location", validators=[Optional(), Length(max=120)])
-    linkedin = StringField("LinkedIn", validators=[Optional(), Length(max=160)])
     summary = TextAreaField("Professional summary", validators=[DataRequired(), Length(min=40, max=1500)])
     skills = TextAreaField("Skills", validators=[DataRequired(), Length(max=600)])
     experience = TextAreaField("Work experience", validators=[DataRequired(), Length(max=3000)])
     education = TextAreaField("Education", validators=[Optional(), Length(max=1800)])
-    projects = TextAreaField("Projects", validators=[Optional(), Length(max=1800)])
     certifications = TextAreaField("Certifications", validators=[Optional(), Length(max=1800)])
-    submit = SubmitField("Generate / Update Resume")
+    submit = SubmitField("Preview Resume")
 
 
 class SettingsForm(FlaskForm):
@@ -205,16 +205,13 @@ def parse_multiline_entries(value: str) -> list[str]:
 def normalize_builder_payload(source: dict) -> dict:
     return {
         "name": sanitize_text(source.get("name", "") or ""),
-        "title": sanitize_text(source.get("title", "") or ""),
         "email": sanitize_text(source.get("email", "") or ""),
         "phone": sanitize_text(source.get("phone", "") or ""),
         "location": sanitize_text(source.get("location", "") or ""),
-        "linkedin": sanitize_text(source.get("linkedin", "") or ""),
         "summary": " ".join((source.get("summary", "") or "").split()),
         "skills": [item.strip() for item in (source.get("skills", "") or "").split(",") if item.strip()],
         "experience": parse_multiline_entries(source.get("experience", "") or ""),
         "education": parse_multiline_entries(source.get("education", "") or ""),
-        "projects": parse_multiline_entries(source.get("projects", "") or ""),
         "certifications": parse_multiline_entries(source.get("certifications", "") or ""),
     }
 
@@ -222,19 +219,31 @@ def normalize_builder_payload(source: dict) -> dict:
 def build_resume_content(data: dict) -> str:
     sections = [
         f"Name: {data['name']}",
-        f"Title: {data['title']}",
         f"Email: {data['email']}",
         f"Phone: {data['phone']}",
         f"Location: {data['location']}",
-        f"LinkedIn: {data['linkedin']}",
         f"Summary: {data['summary']}",
         f"Skills: {', '.join(data['skills'])}",
         f"Experience: {'; '.join(data['experience'])}",
         f"Education: {'; '.join(data['education'])}",
-        f"Projects: {'; '.join(data['projects'])}",
         f"Certifications: {'; '.join(data['certifications'])}",
     ]
     return "\n".join(section for section in sections if section.split(': ', 1)[1].strip())
+
+
+def build_resume_builder_form(starter_profile: dict | None = None) -> ResumeBuilderForm:
+    starter_profile = starter_profile or {}
+    return ResumeBuilderForm(
+        name=current_user.name,
+        email=current_user.email,
+        phone=starter_profile.get("phone", ""),
+        location=starter_profile.get("location", ""),
+        summary=starter_profile.get("summary", ""),
+        skills=", ".join(starter_profile.get("skills", [])),
+        experience="\n".join(starter_profile.get("experience", [])) if isinstance(starter_profile.get("experience"), list) else starter_profile.get("experience", ""),
+        education="\n".join(starter_profile.get("education", [])) if isinstance(starter_profile.get("education"), list) else starter_profile.get("education", ""),
+        certifications="\n".join(starter_profile.get("certifications", [])) if isinstance(starter_profile.get("certifications"), list) else starter_profile.get("certifications", ""),
+    )
 
 
 def detect_wkhtmltopdf() -> str | None:
@@ -441,6 +450,34 @@ def normalize_search_query(value: str) -> str:
     return " ".join((value or "").lower().split())
 
 
+def serialize_comparison_history(rows: list[dict]) -> list[dict]:
+    history = []
+    for row in rows:
+        history.append(
+            {
+                "id": str(row.get("_id")),
+                "job_url": row.get("job_url", ""),
+                "a3_score": round(row.get("a3_score", 0), 1),
+                "hiring_probability": round(row.get("hiring_probability", 0), 1),
+                "skill_gaps": row.get("skill_gaps", [])[:3],
+                "created_at_label": row.get("created_at").strftime("%d %b %Y") if row.get("created_at") else "",
+                "meta": row.get("metadata", {}),
+            }
+        )
+    return history
+
+
+def build_comparator_context() -> dict:
+    latest_comparison = ComparisonModel.latest_for_user(current_user.id)
+    comparison_history = ComparisonModel.for_user(current_user.id, limit=4)
+    latest_comparison_explanation = explain_score(latest_comparison) if latest_comparison else None
+    return {
+        "latest_comparison": latest_comparison,
+        "latest_comparison_explanation": latest_comparison_explanation,
+        "comparison_history": serialize_comparison_history(comparison_history),
+    }
+
+
 def job_matches_search(job: dict, company_name: str, query: str) -> bool:
     normalized_query = normalize_search_query(query)
     if not normalized_query:
@@ -534,6 +571,7 @@ def dashboard():
         "Build practical portfolio projects tailored to your target role.",
         "Advance one core skill with a focused short course this week.",
     ]
+    comparator_context = build_comparator_context()
 
     return render_template(
         "candidate/dashboard.html",
@@ -550,7 +588,72 @@ def dashboard():
         success_rate=success_rate,
         skill_gap_rows=skill_gap_rows,
         recommended_items=recommended_items,
+        **comparator_context,
     )
+
+
+@candidate_bp.route("/comparator")
+@login_required
+@role_required("candidate")
+def comparator():
+    return render_template("candidate/comparator.html", **build_comparator_context())
+
+
+def compare_resume_api():
+    job_url = sanitize_text(request.form.get("job_url", "") or "")
+    resume_file = request.files.get("resume_file")
+
+    if not job_url:
+        return jsonify({"error": "Job URL is required."}), 400
+
+    if not resume_file or not (resume_file.filename or "").strip():
+        return jsonify({"error": "Resume file is required."}), 400
+
+    filename = secure_filename(resume_file.filename or "")
+    if not allowed_file(filename, current_app.config["ALLOWED_EXTENSIONS"]):
+        return jsonify({"error": "Only PDF, DOC, and DOCX resumes are allowed."}), 400
+
+    try:
+        result = compare_resume_to_job(job_url, resume_file)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except Exception:
+        current_app.logger.exception("Resume comparison failed")
+        return jsonify({"error": "We couldn't compare that resume right now. Please try again."}), 500
+
+    ComparisonModel.create(
+        current_user.id,
+        job_url,
+        result,
+        job_snapshot=result.get("meta", {}).get("job", {}),
+        resume_snapshot=result.get("meta", {}).get("resume", {}),
+        metadata={"engine": "A3 Match Engine"},
+    )
+    AIResultModel.create(current_user.id, "resume_comparison", job_url, "a3_match", result)
+    NotificationModel.create(current_user.id, "Resume comparison ready", "Your A³ Match Engine report is ready.", "resume")
+    ActivityModel.log(
+        current_user.id,
+        "compare_resume",
+        {
+            "job_url": job_url,
+            "a3_score": result.get("a3_score", 0),
+            "hiring_probability": result.get("hiring_probability", 0),
+        },
+    )
+
+    response_payload = {
+        "a3_score": result.get("a3_score", 0),
+        "alignment": result.get("alignment", 0),
+        "depth": result.get("depth", 0),
+        "adaptability": result.get("adaptability", 0),
+        "hiring_probability": result.get("hiring_probability", 0),
+        "skill_gaps": result.get("skill_gaps", []),
+        "suggestions": result.get("suggestions", []),
+        "simulation": result.get("simulation", {}),
+        "meta": result.get("meta", {}),
+        "explanation": explain_score(result),
+    }
+    return jsonify(response_payload)
 
 
 @candidate_bp.route("/upload", methods=["GET", "POST"])
@@ -596,36 +699,28 @@ def upload():
 def resume_builder():
     latest_resume = ResumeModel.latest_for_user(current_user.id)
     starter_profile = latest_resume.get("parsed_data", {}) if latest_resume else {}
-    form = ResumeBuilderForm(
-        name=current_user.name,
-        email=current_user.email,
-        summary=starter_profile.get("summary", ""),
-        skills=", ".join(starter_profile.get("skills", [])),
-        experience=starter_profile.get("experience", ""),
-        education="\n".join(starter_profile.get("education", [])) if isinstance(starter_profile.get("education"), list) else starter_profile.get("education", ""),
+    form = build_resume_builder_form(starter_profile)
+    resume_data = normalize_builder_payload(form.data)
+    return render_template(
+        "candidate/resume_builder.html",
+        form=form,
+        resume_data=resume_data,
+        pdf_export_ready=pdfkit_configuration() is not None,
     )
 
-    if request.method == "POST":
-        form = ResumeBuilderForm()
 
-    if form.validate_on_submit():
-        resume_data = normalize_builder_payload(form.data)
-        content = build_resume_content(resume_data)
-        analysis = analyze_resume_with_ses(content, parse_comma_list(form.skills.data))
-        filename_root = secure_filename(resume_data["name"]) or "candidate"
-        resume_id = ResumeModel.create_resume(
-            current_user.id,
-            f"{filename_root}-resume.txt",
-            content,
-            analysis["parsed_data"],
-            analysis["scores"],
-            analysis["algorithm_outputs"],
-            sections=resume_data,
+@candidate_bp.route("/generate-resume", methods=["POST"])
+@login_required
+@role_required("candidate")
+def generate_resume():
+    form = ResumeBuilderForm()
+    if not form.validate_on_submit():
+        return render_template(
+            "candidate/resume_builder.html",
+            form=form,
+            resume_data=normalize_builder_payload(form.data),
+            pdf_export_ready=pdfkit_configuration() is not None,
         )
-        AIResultModel.create(current_user.id, "resume", resume_id, "builder_analysis", analysis)
-        ActivityModel.log(current_user.id, "build_resume", {"resume_id": resume_id})
-        flash("Resume profile saved successfully.", "success")
-        return redirect(url_for("candidate.analysis", id=resume_id))
 
     resume_data = normalize_builder_payload(form.data)
     return render_template(
@@ -633,6 +728,7 @@ def resume_builder():
         form=form,
         resume_data=resume_data,
         pdf_export_ready=pdfkit_configuration() is not None,
+        preview_generated=True,
     )
 
 
@@ -665,6 +761,13 @@ def resume_builder_download():
     response.headers["Content-Type"] = "application/pdf"
     response.headers["Content-Disposition"] = "attachment; filename=hiremind-resume.pdf"
     return response
+
+
+@candidate_bp.route("/download-pdf", methods=["POST"])
+@login_required
+@role_required("candidate")
+def download_pdf():
+    return resume_builder_download()
 
 
 @candidate_bp.route("/analysis/<id>")

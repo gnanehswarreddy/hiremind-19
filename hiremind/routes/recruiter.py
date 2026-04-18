@@ -7,6 +7,7 @@ from flask_wtf import FlaskForm
 from wtforms import DateField, HiddenField, RadioField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Length, Optional
 
+from ai_core import generate_insights, simulate_improvement
 from models.activity_model import ActivityModel
 from models.job_model import ApplicationModel, JobModel
 from models.message_model import MessageModel
@@ -14,6 +15,7 @@ from models.notification_model import NotificationModel
 from models.resume_model import ResumeModel
 from models.user_model import UserModel
 from services.job_models import job_parsing_model, job_representation_model
+from services.resume_comparator import compare_parsed_job_and_resume, normalize_job_payload, normalize_resume_payload
 from services.system_core import rank_candidates_for_job
 from utils.security import role_required, sanitize_text
 from utils.helpers import parse_comma_list
@@ -101,6 +103,27 @@ def build_recruiter_message_threads(recruiter_id: str, query: str = "") -> tuple
     filtered_chats = [chat for chat in chats if recruiter_chat_matches(chat, query)]
     filtered_threads = {chat["id"]: threads.get(chat["id"], []) for chat in filtered_chats}
     return filtered_chats, filtered_threads
+
+
+def build_recruiter_ai_analysis(candidate_doc: dict, resume_doc: dict, job: dict | None = None) -> dict:
+    normalized_resume = normalize_resume_payload(resume_doc)
+    normalized_job = normalize_job_payload(
+        job
+        or {
+            "title": "General role",
+            "description": resume_doc.get("content", ""),
+            "skills": normalized_resume.get("skills", []),
+            "experience_level": normalized_resume.get("experience", ""),
+        }
+    )
+    comparison = compare_parsed_job_and_resume(normalized_job, normalized_resume)
+    insights = generate_insights(candidate_doc, comparison, job or normalized_job)
+    simulation = simulate_improvement(normalized_resume, normalized_job, comparison)
+    return {
+        "comparison": comparison,
+        "insights": insights,
+        "simulation": simulation,
+    }
 
 
 @recruiter_bp.route("/dashboard")
@@ -193,6 +216,41 @@ def dashboard():
         )
 
     date_range = format_dashboard_range()
+    ai_priority_rows = []
+    hidden_talent_rows = []
+    seen_candidates = set()
+    for application in applications:
+        candidate_doc = UserModel.get_raw_by_id(application["candidate_id"])
+        job = JobModel.get_job(application["job_id"])
+        latest_resume = ResumeModel.latest_for_user(application["candidate_id"])
+        if not candidate_doc or not job or not latest_resume:
+            continue
+        analysis = build_recruiter_ai_analysis(candidate_doc, latest_resume, job)
+        row = {
+            "candidate_id": str(candidate_doc["_id"]),
+            "candidate_name": candidate_doc.get("name", "Candidate"),
+            "job_title": job.get("title", "Role"),
+            "a3_score": round(analysis["comparison"]["a3_score"], 1),
+            "hiring_probability": round(analysis["comparison"]["hiring_probability"], 1),
+            "summary": analysis["insights"]["summary"],
+            "decision": analysis["insights"]["shortlist_recommendation"],
+            "adaptability": round(analysis["comparison"]["adaptability"], 1),
+        }
+        ai_priority_rows.append(row)
+        if str(candidate_doc["_id"]) not in seen_candidates and analysis["comparison"]["adaptability"] >= 74 and analysis["comparison"]["alignment"] < 72:
+            hidden_talent_rows.append(
+                {
+                    "candidate_id": str(candidate_doc["_id"]),
+                    "alias": analysis["insights"]["blind_profile"]["alias"],
+                    "job_title": job.get("title", "Role"),
+                    "adaptability": round(analysis["comparison"]["adaptability"], 1),
+                    "reason": "High adaptability suggests this candidate may grow into the role quickly.",
+                }
+            )
+            seen_candidates.add(str(candidate_doc["_id"]))
+
+    ai_priority_rows.sort(key=lambda item: (item["hiring_probability"], item["a3_score"]), reverse=True)
+    hidden_talent_rows = hidden_talent_rows[:3]
 
     return render_template(
         "recruiter/dashboard.html",
@@ -204,6 +262,8 @@ def dashboard():
         sources=sources,
         date_range=date_range,
         recruiter_name=current_user.name,
+        ai_priority_rows=ai_priority_rows[:4],
+        hidden_talent_rows=hidden_talent_rows,
     )
 
 
@@ -364,7 +424,20 @@ def matches(job_id):
             )
 
     ranked = rank_candidates_for_job(candidate_profiles, job)
-    return render_template("recruiter/matches.html", job=job, ranked=ranked)
+    enriched_ranked = []
+    for row in ranked:
+        candidate_doc = UserModel.get_raw_by_id(str(row["candidate"]["_id"]))
+        analysis = build_recruiter_ai_analysis(candidate_doc or row["candidate"], row["resume"], job)
+        enriched_ranked.append(
+            {
+                **row,
+                "a3": analysis["comparison"],
+                "ai": analysis["insights"],
+                "simulation": analysis["simulation"],
+            }
+        )
+    enriched_ranked.sort(key=lambda item: (item["a3"]["hiring_probability"], item["a3"]["a3_score"]), reverse=True)
+    return render_template("recruiter/matches.html", job=job, ranked=enriched_ranked)
 
 
 @recruiter_bp.route("/candidate/<id>")
@@ -378,12 +451,20 @@ def candidate_profile(id):
         return redirect(url_for("recruiter.dashboard"))
     latest_resume = resumes[0] if resumes else None
     candidate_chat_id = MessageModel.build_conversation_id(current_user.id, candidate.id)
+    focus_job_id = sanitize_text(request.args.get("job_id", "") or "")
+    focus_job = JobModel.get_job(focus_job_id) if focus_job_id else None
+    ai_analysis = None
+    if latest_resume:
+        candidate_doc = UserModel.get_raw_by_id(id) or {}
+        ai_analysis = build_recruiter_ai_analysis(candidate_doc, latest_resume, focus_job)
     return render_template(
         "recruiter/candidate_profile.html",
         candidate=candidate,
         latest_resume=latest_resume,
         resumes=resumes,
         candidate_chat_id=candidate_chat_id,
+        focus_job=focus_job,
+        ai_analysis=ai_analysis,
     )
 
 
@@ -403,15 +484,26 @@ def applications():
     for application in ApplicationModel.recruiter_applications(current_user.id):
         job = JobModel.get_job(application["job_id"])
         candidate = UserModel.get_by_id(application["candidate_id"])
+        candidate_doc = UserModel.get_raw_by_id(application["candidate_id"])
+        latest_resume = ResumeModel.latest_for_user(application["candidate_id"])
         if job and candidate:
+            ai_analysis = build_recruiter_ai_analysis(candidate_doc or {}, latest_resume, job) if latest_resume and candidate_doc else None
             rows.append(
                 {
                     "application": application,
                     "job": job,
                     "candidate": candidate,
                     "chat_id": MessageModel.build_conversation_id(current_user.id, candidate.id),
+                    "ai_analysis": ai_analysis,
                 }
             )
+    rows.sort(
+        key=lambda row: (
+            row["ai_analysis"]["comparison"]["hiring_probability"] if row.get("ai_analysis") else 0,
+            row["ai_analysis"]["comparison"]["a3_score"] if row.get("ai_analysis") else 0,
+        ),
+        reverse=True,
+    )
     return render_template("recruiter/applications.html", rows=rows)
 
 

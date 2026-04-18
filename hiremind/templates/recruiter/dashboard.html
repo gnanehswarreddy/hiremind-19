@@ -146,5 +146,56 @@
             </div>
         </article>
     </section>
+
+    <section class="recruiter-panel-grid bottom">
+        <article class="recruiter-panel">
+            <div class="recruiter-panel-head">
+                <h3>AI Priority Shortlist</h3>
+                <a href="{{ url_for('recruiter.applications') }}">Open pipeline</a>
+            </div>
+            <div class="recruiter-ai-list">
+                {% for item in ai_priority_rows %}
+                    <div class="recruiter-ai-row">
+                        <div class="recruiter-ai-copy">
+                            <strong>{{ item.candidate_name }}</strong>
+                            <span>{{ item.job_title }}</span>
+                            <p>{{ item.summary }}</p>
+                        </div>
+                        <div class="recruiter-ai-metrics">
+                            <span>{{ item.a3_score|round|int }} A³</span>
+                            <span>{{ item.hiring_probability|round|int }}% hire</span>
+                            <em>{{ item.decision }}</em>
+                        </div>
+                    </div>
+                {% else %}
+                    <section class="empty-state"><p>No AI shortlist recommendations yet.</p></section>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="recruiter-panel">
+            <div class="recruiter-panel-head">
+                <h3>Talent Discovery AI</h3>
+                <a href="{{ url_for('recruiter.applications') }}">Review candidates</a>
+            </div>
+            <div class="recruiter-ai-list">
+                {% for item in hidden_talent_rows %}
+                    <div class="recruiter-ai-row subtle">
+                        <div class="recruiter-ai-copy">
+                            <strong>{{ item.alias }}</strong>
+                            <span>{{ item.job_title }}</span>
+                            <p>{{ item.reason }}</p>
+                        </div>
+                        <div class="recruiter-ai-metrics">
+                            <span>{{ item.adaptability|round|int }}% adaptability</span>
+                            <a href="{{ url_for('recruiter.candidate_profile', id=item.candidate_id) }}">Review</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <section class="empty-state"><p>No hidden talent signals yet.</p></section>
+                {% endfor %}
+            </div>
+        </article>
+    </section>
 </section>
 {% endblock %}

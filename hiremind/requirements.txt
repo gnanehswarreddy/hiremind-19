@@ -7,3 +7,6 @@ bcrypt==4.2.1
 PyPDF2==3.0.1
 docx2txt==0.9
 pdfkit==1.0.0
+beautifulsoup4==4.12.3
+sentence-transformers==3.3.1
+spacy==3.8.2

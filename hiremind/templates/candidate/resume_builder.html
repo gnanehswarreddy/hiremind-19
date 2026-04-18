@@ -1,306 +1,258 @@
 {% extends "candidate/base.html" %}
-{% block title %}Resume Builder | HireMind{% endblock %}
-{% block page_title %}Resume Builder{% endblock %}
-{% block page_subtitle %}Shape a polished, structured resume inside HireMind with an editable live preview.{% endblock %}
+{% block title %}ATS Resume Builder | HireMind{% endblock %}
+{% block page_title %}ATS Resume Builder{% endblock %}
+{% block page_subtitle %}Create a clean, minimal, ATS-friendly resume with black headings, black text, and PDF export.{% endblock %}
 {% block content %}
-<section class="builder-shell">
-    <form id="resumeBuilderForm" class="builder-panel builder-form" method="post">
+<section class="ats-builder-shell">
+    <form id="atsResumeBuilderForm" class="ats-builder-form" method="post" action="{{ url_for('candidate.generate_resume') }}">
         {{ form.hidden_tag() }}
 
-        <section class="builder-card">
-            <div class="builder-card-head">
-                <div>
-                    <h3>Personal Information</h3>
-                    <p>Build the top section of your resume with the details recruiters scan first.</p>
-                </div>
-                <span class="builder-pill">Live Sync</span>
+        <article class="ats-form-panel">
+            <div class="ats-form-head">
+                <h3>Resume Details</h3>
+                <p>Use simple text only. No icons, no color, no multi-column layout.</p>
             </div>
 
-            <div class="builder-grid builder-grid-two">
-                <label class="builder-field">
+            <div class="ats-fields-grid">
+                <label class="ats-field ats-field-full">
                     <span>{{ form.name.label.text }}</span>
-                    {{ form.name(class_="input builder-input", placeholder="Kallakuri Subash", data_preview="name") }}
+                    {{ form.name(class_="ats-input", placeholder="Your full name", data_preview="name") }}
                 </label>
-                <label class="builder-field">
-                    <span>{{ form.title.label.text }}</span>
-                    {{ form.title(class_="input builder-input", placeholder="AI/ML Engineer", data_preview="title") }}
-                </label>
-                <label class="builder-field">
+                <label class="ats-field">
                     <span>{{ form.email.label.text }}</span>
-                    {{ form.email(class_="input builder-input", placeholder="subashkumar@example.com", data_preview="email") }}
+                    {{ form.email(class_="ats-input", placeholder="you@example.com", data_preview="email") }}
                 </label>
-                <label class="builder-field">
+                <label class="ats-field">
                     <span>{{ form.phone.label.text }}</span>
-                    {{ form.phone(class_="input builder-input", placeholder="+91 98765 43210", data_preview="phone") }}
+                    {{ form.phone(class_="ats-input", placeholder="+91 98765 43210", data_preview="phone") }}
                 </label>
-                <label class="builder-field">
+                <label class="ats-field ats-field-full">
                     <span>{{ form.location.label.text }}</span>
-                    {{ form.location(class_="input builder-input", placeholder="Bengaluru, Karnataka, India", data_preview="location") }}
-                </label>
-                <label class="builder-field">
-                    <span>{{ form.linkedin.label.text }}</span>
-                    {{ form.linkedin(class_="input builder-input", placeholder="linkedin.com/in/subashkumar", data_preview="linkedin") }}
+                    {{ form.location(class_="ats-input", placeholder="City, State, Country", data_preview="location") }}
                 </label>
             </div>
-        </section>
 
-        <section class="builder-card">
-            <div class="builder-card-head">
-                <div>
-                    <h3>Professional Summary</h3>
-                    <p>Make it concise, role-specific, and outcomes-oriented.</p>
-                </div>
-                <span class="builder-char-count"><span id="summaryCount">{{ (form.summary.data or '')|length }}</span>/1500</span>
-            </div>
-            <label class="builder-field">
-                {{ form.summary(class_="input textarea builder-input builder-textarea", placeholder="Passionate AI/ML Engineer with strong experience in building machine learning models, data analysis, and production AI systems.", data_preview="summary") }}
+            <label class="ats-field ats-field-full">
+                <span>{{ form.summary.label.text }}</span>
+                {{ form.summary(class_="ats-textarea", rows="5", placeholder="Write a concise professional summary tailored to your target role.", data_preview="summary") }}
             </label>
-        </section>
 
-        <section class="builder-card">
-            <div class="builder-card-head">
-                <div>
-                    <h3>Skills</h3>
-                    <p>Separate each skill with a comma for clean chips in the preview.</p>
-                </div>
-            </div>
-            <label class="builder-field">
-                {{ form.skills(class_="input textarea builder-input builder-textarea builder-skills-input", rows="3", placeholder="Python, Machine Learning, Deep Learning, TensorFlow, SQL, Pandas, NumPy", data_preview="skills") }}
-            </label>
-        </section>
-
-        <section class="builder-card">
-            <div class="builder-card-head">
-                <div>
-                    <h3>Work Experience</h3>
-                    <p>Use one line per achievement or role highlight.</p>
-                </div>
-            </div>
-            <label class="builder-field">
-                {{ form.experience(class_="input textarea builder-input builder-textarea", rows="7", placeholder="AI/ML Engineer - Nexa Talent - Jan 2023 - Present&#10;Built machine learning models to predict churn with 92% accuracy.&#10;Deployed AI solutions using Python, TensorFlow, and AWS.", data_preview="experience") }}
-            </label>
-        </section>
-
-        <section class="builder-card builder-grid builder-grid-two">
-            <div>
-                <div class="builder-card-head compact">
+            <section class="ats-dynamic-section">
+                <div class="ats-dynamic-head">
                     <div>
-                        <h3>Education</h3>
-                        <p>One line per entry works best.</p>
+                        <h4>Work Experience</h4>
+                        <p>Add one entry at a time. Use short bullet-style lines inside each entry.</p>
                     </div>
+                    <button type="button" class="ats-add-button" data-add-experience>Add Entry</button>
                 </div>
-                <label class="builder-field">
-                    {{ form.education(class_="input textarea builder-input builder-textarea", rows="6", placeholder="B.Tech in Computer Science - JNTU Hyderabad - 2019 - 2023&#10;CGPA: 8.6 / 10", data_preview="education") }}
-                </label>
-            </div>
+                {{ form.experience(class_="ats-hidden-field", data_preview="experience", id="experienceField") }}
+                <div class="ats-experience-list" data-experience-list></div>
+            </section>
 
-            <div>
-                <div class="builder-card-head compact">
-                    <div>
-                        <h3>Projects</h3>
-                        <p>Lead with impact and technologies used.</p>
-                    </div>
-                </div>
-                <label class="builder-field">
-                    {{ form.projects(class_="input textarea builder-input builder-textarea", rows="6", placeholder="Customer Churn Prediction - Python, Scikit-learn, Flask&#10;Built ML model to predict churn using Random Forest.", data_preview="projects") }}
-                </label>
-            </div>
-        </section>
-
-        <section class="builder-card">
-            <div class="builder-card-head">
-                <div>
-                    <h3>Certifications</h3>
-                    <p>Add one line per certificate, course, or specialization.</p>
-                </div>
-            </div>
-            <label class="builder-field">
-                {{ form.certifications(class_="input textarea builder-input builder-textarea", rows="5", placeholder="Machine Learning A-Z - Udemy - 2023&#10;AWS Certified Cloud Practitioner - Amazon - 2024", data_preview="certifications") }}
+            <label class="ats-field ats-field-full">
+                <span>{{ form.education.label.text }}</span>
+                {{ form.education(class_="ats-textarea", rows="5", placeholder="Example: B.Tech in Computer Science - ABC University - 2020", data_preview="education") }}
             </label>
-        </section>
 
-        <div class="builder-actions">
-            {{ form.submit(class_="builder-button builder-button-primary") }}
-            <button type="submit" class="builder-button builder-button-secondary" formaction="{{ url_for('candidate.resume_builder_download') }}" formtarget="_blank">Download PDF</button>
-            <button type="reset" class="builder-button builder-button-ghost">Clear All</button>
-        </div>
+            <label class="ats-field ats-field-full">
+                <span>{{ form.skills.label.text }}</span>
+                {{ form.skills(class_="ats-textarea", rows="3", placeholder="Python, SQL, Machine Learning, Flask", data_preview="skills") }}
+            </label>
 
-        {% if not pdf_export_ready %}
-            <p class="builder-note">PDF export will switch to a print-ready page until `pdfkit` and `wkhtmltopdf` are installed on the server.</p>
-        {% endif %}
+            <label class="ats-field ats-field-full">
+                <span>{{ form.certifications.label.text }}</span>
+                {{ form.certifications(class_="ats-textarea", rows="4", placeholder="Example: AWS Certified Cloud Practitioner - 2024", data_preview="certifications") }}
+            </label>
+
+            <div class="ats-action-row">
+                {{ form.submit(class_="ats-button ats-button-primary") }}
+                <button type="submit" class="ats-button" formaction="{{ url_for('candidate.download_pdf') }}" formtarget="_blank">Download PDF</button>
+                <button type="reset" class="ats-button">Clear</button>
+            </div>
+
+            {% if not pdf_export_ready %}
+                <p class="ats-helper-copy">PDF export will fall back to a print-ready page until `pdfkit` and `wkhtmltopdf` are available.</p>
+            {% endif %}
+        </article>
     </form>
 
-    <section class="builder-panel builder-preview-panel">
-        <div class="builder-preview-toolbar">
-            <div class="builder-preview-badge">Preview</div>
-            <div class="builder-preview-meta">Styled for recruiter-friendly scanning</div>
+    <article class="ats-preview-panel">
+        <div class="ats-preview-head">
+            <h3>Resume Preview</h3>
+            <p>{% if preview_generated %}Preview updated.{% else %}Live ATS-style preview.{% endif %}</p>
         </div>
 
-        <article class="resume-preview" id="resumePreview">
-            <header class="resume-hero">
-                <div class="resume-avatar" id="previewAvatar">{{ (resume_data.name[:1] if resume_data.name else "Y")|upper }}</div>
-                <div class="resume-hero-copy">
-                    <h2 id="previewName">{{ resume_data.name or "Your Name" }}</h2>
-                    <p class="resume-role" id="previewTitle">{{ resume_data.title or "Your Role" }}</p>
-                    <div class="resume-contact-grid">
-                        <span id="previewEmail">{{ resume_data.email or "yourmail@example.com" }}</span>
-                        <span id="previewPhone">{{ resume_data.phone or "+91 98765 43210" }}</span>
-                        <span id="previewLocation">{{ resume_data.location or "City, State, Country" }}</span>
-                        <span id="previewLinkedin">{{ resume_data.linkedin or "linkedin.com/in/yourprofile" }}</span>
-                    </div>
-                </div>
-            </header>
+        <section class="ats-resume-sheet" id="atsResumePreview">
+            <div class="name" id="previewName">{{ resume_data.name or "YOUR NAME" }}</div>
+            <div class="contact-line" id="previewContacts">
+                {% set contacts = [] %}
+                {% if resume_data.email %}{% set _ = contacts.append(resume_data.email) %}{% endif %}
+                {% if resume_data.phone %}{% set _ = contacts.append(resume_data.phone) %}{% endif %}
+                {% if resume_data.location %}{% set _ = contacts.append(resume_data.location) %}{% endif %}
+                {{ contacts|join(" | ") if contacts else "email@example.com | +91 98765 43210 | City, State" }}
+            </div>
 
-            <section class="resume-section">
-                <div class="resume-section-title">Professional Summary</div>
-                <p id="previewSummary">{{ resume_data.summary or "Write a concise summary that explains your profile, strengths, and the kind of impact you create." }}</p>
+            <section class="resume-section-block">
+                <div class="section-title">PROFESSIONAL SUMMARY</div>
+                <p class="text" id="previewSummary">{{ resume_data.summary or "Add a concise summary describing your experience, strengths, and target role." }}</p>
             </section>
 
-            <section class="resume-section">
-                <div class="resume-section-title">Skills</div>
-                <div class="resume-chip-row" id="previewSkills">
-                    {% for skill in resume_data.skills %}
-                        <span class="resume-chip">{{ skill }}</span>
-                    {% else %}
-                        <span class="resume-chip muted">Python</span>
-                        <span class="resume-chip muted">Machine Learning</span>
-                        <span class="resume-chip muted">SQL</span>
-                    {% endfor %}
-                </div>
-            </section>
-
-            <section class="resume-section">
-                <div class="resume-section-title">Work Experience</div>
+            <section class="resume-section-block">
+                <div class="section-title">WORK EXPERIENCE</div>
                 <ul class="resume-list" id="previewExperience">
                     {% for item in resume_data.experience %}
-                        <li>{{ item }}</li>
+                        <li class="text">{{ item }}</li>
                     {% else %}
-                        <li>Add work experience highlights to show outcomes, tools, and ownership.</li>
+                        <li class="text">Add work experience entries with measurable achievements and responsibilities.</li>
                     {% endfor %}
                 </ul>
             </section>
 
-            <section class="resume-section">
-                <div class="resume-section-title">Education</div>
+            <section class="resume-section-block">
+                <div class="section-title">EDUCATION</div>
                 <ul class="resume-list" id="previewEducation">
                     {% for item in resume_data.education %}
-                        <li>{{ item }}</li>
+                        <li class="text">{{ item }}</li>
                     {% else %}
-                        <li>Add your degree, institution, and graduation timeline.</li>
+                        <li class="text">Add your degree, institution, and graduation year.</li>
                     {% endfor %}
                 </ul>
             </section>
 
-            <section class="resume-section">
-                <div class="resume-section-title">Projects</div>
-                <ul class="resume-list" id="previewProjects">
-                    {% for item in resume_data.projects %}
-                        <li>{{ item }}</li>
-                    {% else %}
-                        <li>Show one or two strong projects with measurable outcomes.</li>
-                    {% endfor %}
-                </ul>
+            <section class="resume-section-block">
+                <div class="section-title">SKILLS</div>
+                <p class="text" id="previewSkills">{{ resume_data.skills|join(", ") if resume_data.skills else "Add your skills separated by commas." }}</p>
             </section>
 
-            <section class="resume-section">
-                <div class="resume-section-title">Certifications</div>
+            <section class="resume-section-block">
+                <div class="section-title">CERTIFICATIONS</div>
                 <ul class="resume-list" id="previewCertifications">
                     {% for item in resume_data.certifications %}
-                        <li>{{ item }}</li>
+                        <li class="text">{{ item }}</li>
                     {% else %}
-                        <li>Add relevant certifications, courses, or role-based credentials.</li>
+                        <li class="text">Optional: add certifications if relevant.</li>
                     {% endfor %}
                 </ul>
             </section>
-        </article>
-    </section>
+        </section>
+    </article>
 </section>
 
 <script>
 (() => {
-    const form = document.getElementById("resumeBuilderForm");
+    const form = document.getElementById("atsResumeBuilderForm");
     if (!form) return;
 
-    const summaryField = form.querySelector('[data-preview="summary"]');
-    const summaryCount = document.getElementById("summaryCount");
+    const experienceField = document.getElementById("experienceField");
+    const experienceList = form.querySelector("[data-experience-list]");
+    const addExperienceButton = form.querySelector("[data-add-experience]");
+
     const defaults = {
-        name: "Your Name",
-        title: "Your Role",
-        email: "yourmail@example.com",
-        phone: "+91 98765 43210",
-        location: "City, State, Country",
-        linkedin: "linkedin.com/in/yourprofile",
-        summary: "Write a concise summary that explains your profile, strengths, and the kind of impact you create.",
-        skills: ["Python", "Machine Learning", "SQL"],
-        experience: ["Add work experience highlights to show outcomes, tools, and ownership."],
-        education: ["Add your degree, institution, and graduation timeline."],
-        projects: ["Show one or two strong projects with measurable outcomes."],
-        certifications: ["Add relevant certifications, courses, or role-based credentials."],
+        name: "YOUR NAME",
+        summary: "Add a concise summary describing your experience, strengths, and target role.",
+        experience: ["Add work experience entries with measurable achievements and responsibilities."],
+        education: ["Add your degree, institution, and graduation year."],
+        certifications: ["Optional: add certifications if relevant."],
+        skills: "Add your skills separated by commas.",
+        contacts: "email@example.com | +91 98765 43210 | City, State",
     };
 
-    const parseLines = (value, fallback) => {
-        const items = value.split(/\r?\n/).map((item) => item.replace(/^[\s\-•]+/, "").trim()).filter(Boolean);
-        return items.length ? items : fallback;
+    const sanitizeLines = (value) =>
+        value
+            .split(/\r?\n/)
+            .map((item) => item.replace(/^[\s\-â€¢]+/, "").trim())
+            .filter(Boolean);
+
+    const buildExperienceEntry = (value = "") => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "ats-experience-entry";
+        wrapper.innerHTML = `
+            <textarea class="ats-textarea ats-experience-textarea" rows="4" placeholder="Example: Software Engineer - ABC Company - 2023 to Present&#10;Built internal tools that reduced turnaround time by 30%.&#10;Collaborated with product and engineering teams to ship scalable features.">${value}</textarea>
+            <button type="button" class="ats-remove-button">Remove</button>
+        `;
+
+        const textarea = wrapper.querySelector("textarea");
+        const removeButton = wrapper.querySelector(".ats-remove-button");
+
+        textarea.addEventListener("input", syncExperienceField);
+        removeButton.addEventListener("click", () => {
+            wrapper.remove();
+            syncExperienceField();
+            syncPreview();
+        });
+
+        experienceList.appendChild(wrapper);
     };
 
-    const parseSkills = (value) => {
-        const items = value.split(",").map((item) => item.trim()).filter(Boolean);
-        return items.length ? items : defaults.skills;
+    const syncExperienceField = () => {
+        if (!experienceField) return;
+        const values = Array.from(experienceList.querySelectorAll("textarea"))
+            .map((field) => field.value.trim())
+            .filter(Boolean);
+        experienceField.value = values.join("\n");
+        syncPreview();
     };
 
-    const syncText = (field, targetId) => {
+    const renderList = (targetId, items, fallback) => {
         const target = document.getElementById(targetId);
-        if (!field || !target) return;
-        const fallback = defaults[field.dataset.preview];
-        target.textContent = field.value.trim() || fallback;
-    };
-
-    const syncList = (fieldName, targetId, parser) => {
-        const field = form.querySelector(`[data-preview="${fieldName}"]`);
-        const target = document.getElementById(targetId);
-        if (!field || !target) return;
-
-        const items = parser(field.value);
+        if (!target) return;
+        const rows = items.length ? items : fallback;
         target.innerHTML = "";
-
-        items.forEach((item) => {
-            const nodeName = target.classList.contains("resume-chip-row") ? "span" : "li";
-            const child = document.createElement(nodeName);
-            child.textContent = item;
-            child.className = nodeName === "span" ? "resume-chip" : "";
-            target.appendChild(child);
+        rows.forEach((item) => {
+            const li = document.createElement("li");
+            li.className = "text";
+            li.textContent = item;
+            target.appendChild(li);
         });
     };
 
-    const syncAvatar = () => {
+    const syncPreview = () => {
         const nameField = form.querySelector('[data-preview="name"]');
-        const avatar = document.getElementById("previewAvatar");
-        if (!nameField || !avatar) return;
-        avatar.textContent = (nameField.value.trim().charAt(0) || "Y").toUpperCase();
+        const emailField = form.querySelector('[data-preview="email"]');
+        const phoneField = form.querySelector('[data-preview="phone"]');
+        const locationField = form.querySelector('[data-preview="location"]');
+        const summaryField = form.querySelector('[data-preview="summary"]');
+        const educationField = form.querySelector('[data-preview="education"]');
+        const skillsField = form.querySelector('[data-preview="skills"]');
+        const certificationsField = form.querySelector('[data-preview="certifications"]');
+
+        document.getElementById("previewName").textContent = (nameField?.value.trim() || defaults.name).toUpperCase();
+
+        const contacts = [emailField?.value.trim(), phoneField?.value.trim(), locationField?.value.trim()].filter(Boolean);
+        document.getElementById("previewContacts").textContent = contacts.length ? contacts.join(" | ") : defaults.contacts;
+
+        document.getElementById("previewSummary").textContent = summaryField?.value.trim() || defaults.summary;
+        document.getElementById("previewSkills").textContent = skillsField?.value.trim() || defaults.skills;
+
+        renderList("previewExperience", sanitizeLines(experienceField?.value || ""), defaults.experience);
+        renderList("previewEducation", sanitizeLines(educationField?.value || ""), defaults.education);
+        renderList("previewCertifications", sanitizeLines(certificationsField?.value || ""), defaults.certifications);
     };
 
-    const syncAll = () => {
-        syncText(form.querySelector('[data-preview="name"]'), "previewName");
-        syncText(form.querySelector('[data-preview="title"]'), "previewTitle");
-        syncText(form.querySelector('[data-preview="email"]'), "previewEmail");
-        syncText(form.querySelector('[data-preview="phone"]'), "previewPhone");
-        syncText(form.querySelector('[data-preview="location"]'), "previewLocation");
-        syncText(form.querySelector('[data-preview="linkedin"]'), "previewLinkedin");
-        syncText(summaryField, "previewSummary");
-        syncList("skills", "previewSkills", parseSkills);
-        syncList("experience", "previewExperience", (value) => parseLines(value, defaults.experience));
-        syncList("education", "previewEducation", (value) => parseLines(value, defaults.education));
-        syncList("projects", "previewProjects", (value) => parseLines(value, defaults.projects));
-        syncList("certifications", "previewCertifications", (value) => parseLines(value, defaults.certifications));
-        syncAvatar();
-        if (summaryField && summaryCount) {
-            summaryCount.textContent = summaryField.value.length;
-        }
-    };
+    const initialExperience = sanitizeLines(experienceField?.value || "");
+    if (initialExperience.length) {
+        initialExperience.forEach((item) => buildExperienceEntry(item));
+    } else {
+        buildExperienceEntry("");
+    }
 
-    form.addEventListener("input", syncAll);
-    form.addEventListener("reset", () => window.setTimeout(syncAll, 0));
-    syncAll();
+    addExperienceButton?.addEventListener("click", () => buildExperienceEntry(""));
+
+    Array.from(form.querySelectorAll("[data-preview]")).forEach((field) => {
+        field.addEventListener("input", syncPreview);
+    });
+
+    form.addEventListener("reset", () => {
+        window.setTimeout(() => {
+            experienceList.innerHTML = "";
+            buildExperienceEntry("");
+            syncExperienceField();
+            syncPreview();
+        }, 0);
+    });
+
+    syncExperienceField();
+    syncPreview();
 })();
 </script>
 {% endblock %}

@@ -1,12 +1,13 @@
 # HireMind
 
-HireMind is a production-ready Flask and MongoDB hiring platform with candidate and recruiter dashboards, secure session authentication, resume scoring, and job-fit ranking.
+HireMind is a production-ready Flask and MongoDB hiring platform with candidate and recruiter dashboards, secure session authentication, resume scoring, job-fit ranking, and a unified AI decision layer across the hiring lifecycle.
 
 ## Features
 
 - Session-based authentication with bcrypt password hashing and CSRF protection
 - Candidate workflows for resume upload, resume builder, analysis, job discovery, recommendations, and applications
 - Recruiter workflows for job creation, ranked candidate matching, application triage, and analytics
+- HireMind AI System with the A3 Match Engine, score explanation, recruiter insights, improvement simulation, and AI-driven recommendation endpoints
 - Resume parsing, R3 scoring, and CFMA fit matching services
 - Responsive SaaS-style UI built with Jinja2 templates and custom CSS
 
@@ -84,10 +85,11 @@ print(user)
 
 ## Notes
 
-- Resume upload accepts PDF and DOCX files up to 5 MB.
+- Resume upload accepts PDF, DOC, and DOCX files up to 5 MB.
 - The parser uses lightweight keyword extraction and heuristic trait detection.
 - The R3 engine scores relevance, representation, readability, and a final weighted score.
 - The CFMA engine ranks candidates using skill overlap, trait alignment, and experience alignment.
+- The HireMind AI System adds a shared A3 comparator, AI explanations, recruiter-side ranking insights, and candidate improvement guidance.
 
 ## Vercel Deployment
 

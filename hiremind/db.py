@@ -104,6 +104,7 @@ def ensure_indexes():
     activity_logs = get_collection("activity_logs")
     match_scores = get_collection("match_scores")
     ai_results = get_collection("ai_results")
+    comparisons = get_collection("comparisons")
 
     _safe_create_index(users, [("email", ASCENDING)], unique=True)
     _safe_create_index(users, [("role", ASCENDING), ("updated_at", DESCENDING)])
@@ -132,6 +133,8 @@ def ensure_indexes():
     _safe_create_index(activity_logs, [("user_id", ASCENDING), ("created_at", DESCENDING)])
     _safe_create_index(match_scores, [("user_id", ASCENDING), ("job_id", ASCENDING)], unique=True)
     _safe_create_index(ai_results, [("user_id", ASCENDING), ("result_type", ASCENDING), ("created_at", DESCENDING)])
+    _safe_create_index(comparisons, [("user_id", ASCENDING), ("created_at", DESCENDING)])
+    _safe_create_index(comparisons, [("job_url", ASCENDING)])
 
 
 def ensure_search_indexes():

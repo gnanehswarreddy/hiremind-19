@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+
+.env
+*.log
+
+hiremind/.env
+hiremind/server.err.log
+hiremind/server.out.log
+hiremind/instance/uploads/
+hiremind/static/uploads/

@@ -8,7 +8,8 @@ from config import Config
 from db import initialize_mongo
 from models.user_model import UserModel
 from routes.auth import auth_bp
-from routes.candidate import candidate_bp
+from routes.ai_core import ai_bp
+from routes.candidate import candidate_bp, comparator
 from routes.recruiter import recruiter_bp
 from utils.helpers import active_role
 
@@ -31,8 +32,10 @@ def create_app():
     login_manager.init_app(app)
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(ai_bp)
     app.register_blueprint(candidate_bp)
     app.register_blueprint(recruiter_bp)
+    app.add_url_rule("/comparator", endpoint="comparator", view_func=comparator, methods=["GET"])
 
     with app.app_context():
         UserModel.create_indexes()

@@ -39,7 +39,7 @@ class Config:
     DB_NAME = os.environ.get("DB_NAME", "hiremind")
     UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", DEFAULT_UPLOAD_FOLDER)
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024
-    ALLOWED_EXTENSIONS = {"pdf", "docx"}
+    ALLOWED_EXTENSIONS = {"pdf", "doc", "docx"}
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SECURE = IS_VERCEL or _is_truthy(os.environ.get("SESSION_COOKIE_SECURE"))
     SESSION_COOKIE_SAMESITE = "Lax"

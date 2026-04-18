@@ -49,8 +49,12 @@ def read_resume_file(file_path: str) -> str:
     if file_path.lower().endswith(".pdf"):
         reader = PdfReader(file_path)
         return "\n".join(page.extract_text() or "" for page in reader.pages)
-    if file_path.lower().endswith(".docx"):
-        return docx2txt.process(file_path)
+    if file_path.lower().endswith((".doc", ".docx")):
+        try:
+            return docx2txt.process(file_path)
+        except Exception:
+            with open(file_path, "rb") as document_file:
+                return document_file.read().decode("utf-8", errors="ignore")
     return ""
 
 

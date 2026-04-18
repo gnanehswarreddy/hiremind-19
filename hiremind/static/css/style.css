@@ -863,6 +863,112 @@ tbody tr:nth-child(even) {
     margin: 0.65rem 0 0;
 }
 
+.recruiter-ai-list {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.recruiter-ai-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem 1.05rem;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--surface-strong) 42%, var(--card));
+}
+
+.recruiter-ai-row.subtle {
+    background: color-mix(in srgb, var(--surface-soft) 72%, var(--card));
+}
+
+.recruiter-ai-copy {
+    min-width: 0;
+    flex: 1;
+}
+
+.recruiter-ai-copy strong,
+.recruiter-ai-copy span {
+    display: block;
+}
+
+.recruiter-ai-copy span,
+.recruiter-ai-copy p {
+    color: var(--muted);
+}
+
+.recruiter-ai-copy p {
+    margin: 0.45rem 0 0;
+}
+
+.recruiter-ai-metrics {
+    display: grid;
+    gap: 0.55rem;
+    justify-items: end;
+    text-align: right;
+}
+
+.recruiter-ai-metrics span,
+.recruiter-ai-metrics em {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 0.8rem;
+    border-radius: 999px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    font-style: normal;
+    font-weight: 700;
+}
+
+.recruiter-candidate-ai-card {
+    display: grid;
+    gap: 1rem;
+}
+
+.recruiter-candidate-ai-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.recruiter-ai-pill-stack {
+    display: grid;
+    gap: 0.6rem;
+    justify-items: end;
+}
+
+.recruiter-candidate-ai-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+.recruiter-candidate-ai-grid > div {
+    padding: 0.95rem 1rem;
+    border-radius: 18px;
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+}
+
+.recruiter-candidate-ai-grid strong,
+.recruiter-candidate-ai-grid p {
+    display: block;
+    margin: 0;
+}
+
+.recruiter-candidate-ai-grid p {
+    margin-top: 0.4rem;
+    color: var(--muted);
+}
+
+.recruiter-ai-insight-card {
+    display: grid;
+    gap: 1rem;
+}
+
 .recruiter-jobs-shell {
     display: grid;
     gap: 1.2rem;
@@ -2331,6 +2437,21 @@ tbody tr:nth-child(even) {
     }
 
     .recruiter-messages-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .recruiter-ai-row,
+    .recruiter-candidate-ai-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .recruiter-ai-metrics {
+        justify-items: start;
+        text-align: left;
+    }
+
+    .recruiter-candidate-ai-grid {
         grid-template-columns: 1fr;
     }
 

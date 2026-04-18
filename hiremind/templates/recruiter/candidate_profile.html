@@ -6,6 +6,9 @@
     <article class="panel-card">
         <p><strong>Email:</strong> {{ candidate.email }}</p>
         <p><strong>Role:</strong> {{ candidate.role|title }}</p>
+        {% if focus_job %}
+            <p><strong>Focus Job:</strong> {{ focus_job.title }}</p>
+        {% endif %}
         <div class="button-row">
             <a class="primary-button" href="{{ url_for('recruiter.messages', chat=candidate_chat_id) }}">Chat With Candidate</a>
         </div>
@@ -30,4 +33,47 @@
         {% endfor %}
     </article>
 </section>
+
+{% if ai_analysis %}
+<section class="panel-grid">
+    <article class="panel-card recruiter-ai-insight-card">
+        <p class="eyebrow">HireMind AI System</p>
+        <h3>Candidate Intelligence</h3>
+        <p>{{ ai_analysis.insights.summary }}</p>
+        <div class="recruiter-candidate-ai-grid">
+            <div>
+                <strong>A³ Score</strong>
+                <p>{{ ai_analysis.comparison.a3_score|round|int }}%</p>
+            </div>
+            <div>
+                <strong>Hiring Probability</strong>
+                <p>{{ ai_analysis.comparison.hiring_probability|round|int }}%</p>
+            </div>
+            <div>
+                <strong>Shortlist Signal</strong>
+                <p>{{ ai_analysis.insights.shortlist_recommendation }}</p>
+            </div>
+            <div>
+                <strong>Blind Alias</strong>
+                <p>{{ ai_analysis.insights.blind_profile.alias }}</p>
+            </div>
+        </div>
+        <p><strong>Strengths:</strong> {{ ai_analysis.insights.strengths|join(', ') }}</p>
+        <p><strong>Weaknesses:</strong> {{ ai_analysis.insights.weaknesses|join(', ') }}</p>
+        <p><strong>Simulation:</strong> {{ ai_analysis.simulation.headline }}</p>
+    </article>
+
+    <article class="panel-card">
+        <h3>Interview Question Generator</h3>
+        {% for question in ai_analysis.insights.interview_questions %}
+            <div class="list-row">
+                <div>
+                    <strong>Question {{ loop.index }}</strong>
+                    <p>{{ question }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </article>
+</section>
+{% endif %}
 {% endblock %}

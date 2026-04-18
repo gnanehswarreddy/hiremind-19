@@ -1,0 +1,221 @@
+{% extends "candidate/base.html" %}
+{% block title %}Resume Comparator | HireMind{% endblock %}
+{% block page_title %}Resume Comparator{% endblock %}
+{% block page_subtitle %}Compare your resume against a live job posting with the A&sup3; Match Engine.{% endblock %}
+{% block content %}
+        <section
+            class="a3-comparator"
+            data-resume-comparator
+            data-chat-url="{{ url_for('ai_core.chat') }}"
+            data-improve-url="{{ url_for('ai_core.improve_resume_route') }}"
+            data-csrf-token="{{ csrf_token() }}"
+            data-history='{{ comparison_history|tojson }}'
+            {% if latest_comparison %}
+            data-initial-result='{{ {
+                "a3_score": latest_comparison.a3_score,
+                "alignment": latest_comparison.alignment,
+                "depth": latest_comparison.depth,
+                "adaptability": latest_comparison.adaptability,
+                "hiring_probability": latest_comparison.hiring_probability,
+                "skill_gaps": latest_comparison.skill_gaps,
+                "suggestions": latest_comparison.suggestions,
+                "simulation": latest_comparison.simulation
+            }|tojson }}'
+            {% endif %}
+        >
+            <div class="a3-shell">
+                <article class="a3-hero">
+                    <div class="a3-hero-copy">
+                        <span class="a3-kicker">A&sup3; Match Engine</span>
+                        <h2>Resume Comparator</h2>
+                        <p>One advanced comparison flow for job-fit scoring, hiring probability, skill gaps, and AI-backed next steps.</p>
+                    </div>
+                    <div class="a3-hero-pills">
+                        <span>Semantic skill mapping</span>
+                        <span>Depth and adaptability scoring</span>
+                        <span>Actionable AI guidance</span>
+                    </div>
+                </article>
+
+                <div class="a3-grid">
+                    <article class="a3-panel a3-form-panel">
+                        <div class="a3-panel-head">
+                            <div>
+                                <h3>Input</h3>
+                                <p>Enter a job URL, upload your resume, and run the unified comparator.</p>
+                            </div>
+                        </div>
+                        <form class="a3-form" data-resume-comparator-form action="{{ url_for('ai_core.compare_alias') }}" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <label class="a3-field">
+                                <span>Job URL</span>
+                                <input type="url" name="job_url" placeholder="https://company.com/jobs/software-engineer" required>
+                            </label>
+                            <label class="a3-dropzone" data-dropzone>
+                                <input class="visually-hidden-input" type="file" name="resume_file" accept=".pdf,.doc,.docx,application/pdf,.doc,.docx" required>
+                                <strong>Upload Resume</strong>
+                                <p>Drag and drop a PDF, DOC, or DOCX resume here, or choose a file manually.</p>
+                                <span class="a3-file-meta" data-file-name>No file selected</span>
+                            </label>
+                            <button class="a3-submit" type="submit" data-submit-button>Compare</button>
+                            <p class="a3-form-status" data-form-status>Fast, role-aware scoring powered by the A3 engine.</p>
+                        </form>
+                    </article>
+
+                    <article class="a3-panel a3-results-panel">
+                        <div class="a3-panel-head">
+                            <div>
+                                <h3>Results</h3>
+                                <p>Alignment, depth, and adaptability combine into a single fit signal.</p>
+                            </div>
+                            <span class="a3-live-badge">Live analysis</span>
+                        </div>
+
+                        <div class="a3-results" data-results>
+                            <div class="a3-empty" data-empty-state {% if latest_comparison %}hidden{% endif %}>
+                                <strong>No comparison yet</strong>
+                                <p>Run your first comparison to unlock a tailored score, missing skill map, and improvement path.</p>
+                            </div>
+
+                            <div class="a3-result-body" data-result-body {% if not latest_comparison %}hidden{% endif %}>
+                                <div class="a3-score-row">
+                                    <div class="a3-ring" data-a3-ring style="--score: {{ latest_comparison.a3_score if latest_comparison else 0 }};">
+                                        <div>
+                                            <strong data-a3-score>{{ "%.0f"|format(latest_comparison.a3_score) if latest_comparison else 0 }}</strong>
+                                            <span>A&sup3; Score</span>
+                                        </div>
+                                    </div>
+                                    <div class="a3-probability-card">
+                                        <span>Hiring Probability</span>
+                                        <strong data-hiring-probability>{{ "%.0f"|format(latest_comparison.hiring_probability) if latest_comparison else 0 }}%</strong>
+                                        <p data-probability-copy>{% if latest_comparison %}Your last analysis is ready to review.{% else %}Upload a resume to generate a prediction.{% endif %}</p>
+                                    </div>
+                                </div>
+
+                                <div class="a3-bars">
+                                    <div class="a3-bar-row">
+                                        <span>Alignment</span>
+                                        <div class="a3-bar"><i data-bar="alignment" style="width: {{ latest_comparison.alignment if latest_comparison else 0 }}%"></i></div>
+                                        <strong data-alignment>{{ "%.0f"|format(latest_comparison.alignment) if latest_comparison else 0 }}%</strong>
+                                    </div>
+                                    <div class="a3-bar-row">
+                                        <span>Depth</span>
+                                        <div class="a3-bar"><i data-bar="depth" style="width: {{ latest_comparison.depth if latest_comparison else 0 }}%"></i></div>
+                                        <strong data-depth>{{ "%.0f"|format(latest_comparison.depth) if latest_comparison else 0 }}%</strong>
+                                    </div>
+                                    <div class="a3-bar-row">
+                                        <span>Adaptability</span>
+                                        <div class="a3-bar"><i data-bar="adaptability" style="width: {{ latest_comparison.adaptability if latest_comparison else 0 }}%"></i></div>
+                                        <strong data-adaptability>{{ "%.0f"|format(latest_comparison.adaptability) if latest_comparison else 0 }}%</strong>
+                                    </div>
+                                </div>
+
+                                <div class="a3-meta-grid">
+                                    <section class="a3-subpanel">
+                                        <div class="a3-subpanel-head">
+                                            <h4>Skill Gaps</h4>
+                                        </div>
+                                        <ul class="a3-chip-list" data-skill-gaps>
+                                            {% for skill in (latest_comparison.skill_gaps if latest_comparison else [])[:6] %}
+                                                <li>{{ skill }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </section>
+
+                                    <section class="a3-subpanel">
+                                        <div class="a3-subpanel-head">
+                                            <h4>Suggestions</h4>
+                                        </div>
+                                        <div class="a3-suggestion-list" data-suggestions>
+                                            {% for suggestion in (latest_comparison.suggestions if latest_comparison else [])[:4] %}
+                                                <article class="a3-suggestion-card">{{ suggestion }}</article>
+                                            {% endfor %}
+                                        </div>
+                                    </section>
+                                </div>
+
+                                <section class="a3-simulation" data-simulation {% if not latest_comparison or not latest_comparison.simulation %}hidden{% endif %}>
+                                    <span>Improvement Simulation</span>
+                                    <strong data-simulation-headline>{{ latest_comparison.simulation.headline if latest_comparison and latest_comparison.simulation else "" }}</strong>
+                                    <p>
+                                        Projected A&sup3; Score:
+                                        <b data-simulation-score>{{ "%.0f"|format(latest_comparison.simulation.projected_a3_score) if latest_comparison and latest_comparison.simulation else 0 }}</b>
+                                        |
+                                        Projected Hiring Probability:
+                                        <b data-simulation-probability>{{ "%.0f"|format(latest_comparison.simulation.projected_hiring_probability) if latest_comparison and latest_comparison.simulation else 0 }}</b>%
+                                    </p>
+                                </section>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <article class="a3-history-panel">
+                    <div class="a3-panel-head">
+                        <div>
+                            <h3>Recent Comparisons</h3>
+                            <p>Saved automatically so you can track improvement over time.</p>
+                        </div>
+                    </div>
+                    <div class="a3-history-list" data-history-list>
+                        {% for item in comparison_history %}
+                            <div class="a3-history-item">
+                                <div>
+                                    <strong>{{ item.meta.engine if item.meta and item.meta.engine else "A3 Match Engine" }}</strong>
+                                    <p>{{ item.job_url }}</p>
+                                </div>
+                                <div class="a3-history-metrics">
+                                    <span>{{ item.a3_score|round|int }} A3</span>
+                                    <span>{{ item.hiring_probability|round|int }}% Hire</span>
+                                    <small>{{ item.created_at_label }}</small>
+                                </div>
+                            </div>
+                        {% else %}
+                            <p class="empty-copy">Your comparison history will appear here after the first run.</p>
+                        {% endfor %}
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="a3-ai-grid">
+            <article class="panel a3-ai-panel">
+                <div class="panel-head">
+                    <h3>Why This Score?</h3>
+                    <button class="a3-inline-button" type="button" data-improve-resume-button>Resume Improver</button>
+                </div>
+                <div class="a3-explanation-copy" data-explanation-panel>
+                    {% if latest_comparison_explanation %}
+                        <strong data-explanation-summary>{{ latest_comparison_explanation.summary }}</strong>
+                        <p data-explanation-detail>{{ latest_comparison_explanation.detailed }}</p>
+                        <p><b>Strengths:</b> <span data-explanation-strengths>{{ latest_comparison_explanation.strengths|join(', ') }}</span></p>
+                        <p><b>Watchouts:</b> <span data-explanation-weaknesses>{{ latest_comparison_explanation.weaknesses|join(', ') }}</span></p>
+                    {% else %}
+                        <strong data-explanation-summary>Run a comparison to get a role-aware explanation.</strong>
+                        <p data-explanation-detail>The AI layer will turn the raw A3 metrics into practical advice you can act on immediately.</p>
+                        <p><b>Strengths:</b> <span data-explanation-strengths>Pending analysis</span></p>
+                        <p><b>Watchouts:</b> <span data-explanation-weaknesses>Pending analysis</span></p>
+                    {% endif %}
+                </div>
+                <div class="a3-improver-output" data-improver-output hidden></div>
+            </article>
+
+            <button class="a3-chat-launch" type="button" data-chat-toggle>AI Career Chat</button>
+            <section class="a3-chatbot" data-chatbot hidden>
+                <div class="a3-chat-head">
+                    <div>
+                        <strong>HireMind AI</strong>
+                        <p>Ask why your score changed, what to improve, or whether to apply.</p>
+                    </div>
+                    <button class="a3-chat-close" type="button" data-chat-toggle>&times;</button>
+                </div>
+                <div class="a3-chat-thread" data-chat-thread>
+                    <div class="a3-chat-bubble ai">I can explain your A3 score, identify gaps, and suggest the fastest improvements.</div>
+                </div>
+                <form class="a3-chat-form" data-chat-form>
+                    <input type="text" name="query" placeholder="Why is my score low?" autocomplete="off">
+                    <button type="submit">Send</button>
+                </form>
+            </section>
+        </section>
+{% endblock %}

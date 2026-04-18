@@ -25,6 +25,7 @@
                 <a class="nav-item {% if request.endpoint == 'candidate.resumes' or request.endpoint == 'candidate.upload' or request.endpoint == 'candidate.resume_builder' %}active{% endif %}" href="{{ url_for('candidate.resumes') }}">Resumes</a>
                 <a class="nav-item {% if request.endpoint == 'candidate.upload' %}active{% endif %}" href="{{ url_for('candidate.upload') }}">Upload Resume</a>
                 <a class="nav-item {% if request.endpoint == 'candidate.resume_builder' %}active{% endif %}" href="{{ url_for('candidate.resume_builder') }}">Resume Builder</a>
+                <a class="nav-item {% if request.endpoint == 'candidate.comparator' %}active{% endif %}" href="{{ url_for('candidate.comparator') }}">Resume Comparator</a>
                 <a class="nav-item {% if request.endpoint == 'candidate.analysis' %}active{% endif %}" href="{{ url_for('candidate.analysis', id=candidate_shell_resume._id|string) if candidate_shell_resume else url_for('candidate.upload') }}">Check Score</a>
                 <a class="nav-item {% if request.endpoint == 'candidate.recommendations' %}active{% endif %}" href="{{ url_for('candidate.recommendations') }}">Skills &amp; Gap</a>
                 <a class="nav-item {% if request.endpoint == 'candidate.analysis' %}active{% endif %}" href="{{ url_for('candidate.analysis', id=candidate_shell_resume._id|string) if candidate_shell_resume else url_for('candidate.upload') }}">AI Insights</a>
@@ -75,7 +76,7 @@
                     <span class="search-shortcut">K</span>
                 </form>
 
-                <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle color theme">
+                <button id="themeToggle" class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">
                     <span class="theme-toggle-track">
                         <span class="theme-toggle-thumb"></span>
                     </span>
@@ -112,7 +113,6 @@
     </main>
 </div>
 
-<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
